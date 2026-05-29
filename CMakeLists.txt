@@ -15,13 +15,10 @@ set(DISTRIBUTED_SQUARE_COUNTING_FILE_LIST
         countingalgo.cpp
         distributedrun.hpp
         distributedrun.cpp
-        distributedrunhpec.cpp
         distributioncoordinator.hpp
         distributioncoordinator.cpp
         graph.h
         graph.cpp
-        hpecgraph.cpp
-        hpecgraph.hpp
         matchingcommand.h
         matchingcommand.cpp
         partition.hpp
