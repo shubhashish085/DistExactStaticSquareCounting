@@ -22,7 +22,6 @@ set(DISTRIBUTED_SQUARE_COUNTING_FILE_LIST
         graph.cpp
         hpecgraph.cpp
         hpecgraph.hpp
-        masterdynamicgraph.hpp
         matchingcommand.h
         matchingcommand.cpp
         partition.hpp
@@ -34,4 +33,4 @@ set(DISTRIBUTED_SQUARE_COUNTING_FILE_LIST
 add_executable(DistExactStaticSquareCounting.out ${DISTRIBUTED_SQUARE_COUNTING_FILE_LIST})
 
 find_package(MPI REQUIRED)
-target_link_libraries(DistSquareCounting.out PUBLIC MPI::MPI_CXX)
+target_link_libraries(DistExactStaticSquareCounting.out PUBLIC MPI::MPI_CXX)

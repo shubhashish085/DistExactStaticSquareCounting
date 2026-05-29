@@ -20,6 +20,7 @@ public:
     ui max_degree;
 
     ui* degrees;
+    ui* main_degrees;
 
     ui* offsets;
     VertexID * neighbors;
@@ -51,11 +52,13 @@ public:
 public:
     void loadGraphFromFile(const std::string& file_path);
     void loadPartitionedGraphFromFile(const std::string& vertex_partition_file_path, const std::string& file_path, int partition_no);
-    void loadDBPartitionedGraphFromFile(const std::string& file_path, VertexID minVertexID, VertexID maxVertexID);
-    void transformToAugmentedGraph(Graph* data_graph, Graph* augmented_graph);
     void printGraphMetaData();
-    long long count_exact_square();
-    long long count_exact_square_parallel();
+
+    bool is_smaller(VertexID u, VertexID v);
+    
+    void transformToAugmentedGraph(Graph* augmented_graph);
+    long long sequential_count_exact_square();
+    long long sma_count_exact_square();
 
     const ui* getOffsets() const {
         return offsets;

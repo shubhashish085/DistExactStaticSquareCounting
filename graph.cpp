@@ -159,173 +159,6 @@ void Graph::loadGraphFromFile(const std::string &file_path)
     }
 }
 
-void Graph::loadDBPartitionedGraphFromFile(const std::string &file_path, VertexID minVertexID, VertexID maxVertexID)
-{
-
-    std::ifstream infile(file_path);
-
-    if (!infile.is_open())
-    {
-        std::cout << "Can not open the graph file " << file_path << " ." << std::endl;
-        exit(-1);
-    }
-
-    char type;
-    std::string input_line;
-    ui label = 0;
-
-    std::cout << "Reading File............ " << std::endl;
-
-    ui line_count = 0, count = 0, comment_line_count = 4;
-
-    vertices_count = maxVertexID - minVertexID + 1;
-    edges_count = 0;
-    degrees = new ui[vertices_count];
-    std::fill(degrees, degrees + vertices_count, 0);
-
-    while (std::getline(infile, input_line))
-    {
-        line_count++;
-        if (line_count >= comment_line_count)
-        {
-            break;
-        }
-    }
-
-    VertexID begin, end;
-
-    while (infile >> begin)
-    {
-
-        infile >> end;
-
-        if (begin >= minVertexID || end <= maxVertexID)
-        {
-
-            if (begin != end && begin >= minVertexID && end <= maxVertexID)
-            {
-                begin -= minVertexID;
-                end -= minVertexID;
-                degrees[begin] += 1;
-                degrees[end] += 1;
-                edges_count += 2;
-            }
-            else if (begin != end && begin >= minVertexID)
-            {
-                begin -= minVertexID;
-                degrees[begin] += 1;
-                edges_count += 1;
-            }
-            else if (begin != end && end <= maxVertexID)
-            {
-                end -= minVertexID;
-                degrees[end] += 1;
-                edges_count += 1;
-            }
-        }
-    }
-
-    infile.close();
-
-    std::ifstream input_file(file_path);
-
-    offsets = new ui[vertices_count + 1];
-    offsets[0] = 0;
-
-    neighbors = new VertexID[edges_count];
-    max_degree = 0;
-
-    LabelID max_label_id = 0, begin_vtx_label, end_vtx_label;
-    std::vector<ui> neighbors_offset(vertices_count, 0); // used for adjust neighbors with offset
-
-    for (ui id = 0; id < vertices_count; id++)
-    {
-        offsets[id + 1] = offsets[id] + degrees[id];
-
-        if (degrees[id] > max_degree)
-        {
-            max_degree = degrees[id];
-        }
-    }
-
-    line_count = 0;
-
-    while (std::getline(input_file, input_line))
-    {
-        line_count++;
-        if (line_count >= comment_line_count)
-        {
-            break;
-        }
-    }
-
-    ui offset;
-
-    while (input_file >> begin)
-    {
-
-        input_file >> end;
-
-        line_count++;
-        if ((begin > maxVertexID && end > maxVertexID) || (begin < minVertexID && end < minVertexID) || begin == end)
-        {
-            continue;
-        }
-
-        if (begin >= minVertexID && end <= maxVertexID)
-        {
-
-            begin -= minVertexID;
-            end -= minVertexID;
-
-            offset = offsets[begin] + neighbors_offset[begin];
-            neighbors[offset] = end;
-
-            offset = offsets[end] + neighbors_offset[end];
-            neighbors[offset] = begin;
-
-            neighbors_offset[begin] += 1;
-            neighbors_offset[end] += 1;
-        }
-        else if (begin >= minVertexID)
-        {
-
-            begin -= minVertexID;
-
-            offset = offsets[begin] + neighbors_offset[begin];
-            neighbors[offset] = end;
-            neighbors_offset[begin] += 1;
-        }
-        else if (end <= maxVertexID)
-        {
-
-            end -= minVertexID;
-
-            offset = offsets[end] + neighbors_offset[end];
-            neighbors[offset] = begin;
-
-            neighbors_offset[end] += 1;
-        }
-    }
-
-    input_file.close();
-
-    for (ui i = 0; i < vertices_count; ++i)
-    {
-        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
-    }
-}
-
-void transformToAugmentedGraph(Graph *data_graph, Graph *augmented_graph)
-{
-
-    augmented_graph->vertices_count = data_graph->vertices_count;
-    augmented_graph->edges_count = data_graph->edges_count;
-
-    augmented_graph->degrees = new ui[augmented_graph->vertices_count];
-    std::fill(augmented_graph->degrees, augmented_graph->degrees + augmented_graph->vertices_count, 0);
-}
-
 void Graph::loadPartitionedGraphFromFile(const std::string &vertex_partition_file_path, const std::string &file_path, int partition_no)
 {
 
@@ -547,6 +380,78 @@ void Graph::loadPartitionedGraphFromFile(const std::string &vertex_partition_fil
         std::sort(g_neighbors + g_offsets[i], g_neighbors + g_offsets[i + 1]);
     }
 }
+
+
+bool Graph::is_smaller(VertexID u, VertexID v){
+
+    if(u == v){
+        return false;
+    }
+
+    if(main_degrees[u] < main_degrees[v]){
+        return true;
+    }
+
+    if((main_degrees[u] == main_degrees[v]) && u < v){
+        return true;
+    }
+
+    return false; 
+
+}
+
+
+void Graph::transformToAugmentedGraph(Graph *augmented_graph){
+
+    augmented_graph->vertices_count = vertices_count;
+    augmented_graph->edges_count = edges_count;
+    augmented_graph->offsets = new ui[vertices_count + 1];
+    augmented_graph->neighbors = new VertexID[edges_count];
+
+    augmented_graph->offsets[0] = 0;
+
+    augmented_graph->main_degrees = new ui[augmented_graph->vertices_count];
+    augmented_graph->degrees = new ui[augmented_graph->vertices_count];
+    std::fill(augmented_graph->degrees, augmented_graph->degrees + augmented_graph->vertices_count, 0);
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+            if ((degrees[neighbors[j]] > degrees[i]) || ((degrees[neighbors[j]] == degrees[i]) && neighbors[j] > i))
+            {
+                augmented_graph->degrees[i] += 1;
+            }
+        }
+    }
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        augmented_graph->offsets[i + 1] = augmented_graph->offsets[i] + augmented_graph->degrees[i];
+        augmented_graph->main_degrees[i] = degrees[i];
+    }
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+    ui offset;
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+
+            if ((degrees[neighbors[j]] > degrees[i]) || ((degrees[neighbors[j]] == degrees[i]) && neighbors[j] > i))
+            {
+
+                offset = augmented_graph->offsets[i] + neighbors_offset[i];
+                augmented_graph->neighbors[offset] = neighbors[j];
+                neighbors_offset[i] += 1;
+            }
+        }
+    }
+
+    std::cout << "Transformation Finished ...... " << std::endl;    
+}
+
 
 void Graph::printGraphMetaData()
 {
