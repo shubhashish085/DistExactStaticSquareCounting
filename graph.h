@@ -51,7 +51,12 @@ public:
 
 public:
     void loadGraphFromFile(const std::string& file_path);
-    void loadPartitionedGraphFromFile(const std::string& vertex_partition_file_path, const std::string& file_path, int partition_no);
+    void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
+    void loadPartitionedGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
+    void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file);
     void printGraphMetaData();
 
     bool is_smaller(VertexID u, VertexID v);
