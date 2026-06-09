@@ -165,3 +165,70 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
     return exact_count;
 
 }
+
+
+long long CountingAlgorithm::db_count_square_in_cut_graph(Graph* cut_graph){
+
+    long long exact_square_in_cut_graph = sequential_db_count_square(cut_graph);
+
+    return exact_square_in_cut_graph;
+}
+
+long long CountingAlgorithm::db_count_square_in_local_graph(Graph* local_graph){
+
+    long long exact_square_in_local_graph = sequential_db_count_square(local_graph);
+
+    return exact_square_in_local_graph;
+}
+
+long long CountingAlgorithm::db_count_square_in_interface_graph(Graph* interface_graph){
+
+    long long exact_square_in_interface_graph = sequential_db_count_square(interface_graph);
+    
+    return exact_square_in_interface_graph;
+}
+
+void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long global_square_count = 0, local_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* local_augmented_graph = new Graph();
+        local_graph->transformToAugmentedGraph(local_augmented_graph);
+
+        Graph* interface_graph = new Graph();
+        interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* interface_augmented_graph = new Graph();
+        interface_graph->transformToAugmentedGraph(interface_augmented_graph);
+
+        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        local_interface_square_count = db_count_square_in_interface_graph(interface_augmented_graph);
+
+        std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+
+        global_square_count += local_square_count;
+        global_square_count += local_interface_square_count;
+    }
+
+    Graph* cut_graph = new Graph();
+    cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+
+    Graph* transformed_cut_graph = new Graph();
+    cut_graph->transformToAugmentedGraph(transformed_cut_graph);
+
+    cut_graph_square_count = db_count_square_in_cut_graph(cut_graph);
+    std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    
+    global_square_count += cut_graph_square_count;
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Global Square Count : " << global_square_count << std::endl;
+    std::cout << "==============================================" << std::endl;
+
+}

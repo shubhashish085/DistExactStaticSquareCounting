@@ -580,12 +580,12 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
                 contains_in_partition = true;
 
                 if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
-                    vertex_idx_map[vertex_id] = vertices_count;
+                    vertex_idx_map[begin] = vertices_count;
                     vertices_count++;
                 }
 
                 if(vertex_idx_map.find(end) == vertex_idx_map.end()){
-                    vertex_idx_map[vertex_id] = vertices_count;
+                    vertex_idx_map[end] = vertices_count;
                     vertices_count++;
                 }
 
@@ -611,13 +611,12 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
     while (std::getline(input_file, input_line))
     {
         line_count++;
-        if (line_count >= comment_line_count)
-        {
+        if (line_count >= comment_line_count){
             break;
         }
     }
 
-    ui begin_idx, end_idx;
+    VertexID begin_idx, end_idx;
 
     while (input_file >> begin)
     {
@@ -679,8 +678,7 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
 
     in_file.close();
 
-    for (ui i = 0; i < vertices_count; ++i)
-    {
+    for (ui i = 0; i < vertices_count; ++i){
         std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
     }
 }
@@ -745,7 +743,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
 
         infile >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if(partition[begin] != partition[end]){
                 
                 if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
@@ -791,7 +789,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
 
         input_file >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if((vertex_idx_map.find(begin) != vertex_idx_map.end()) && (vertex_idx_map.find(end) != vertex_idx_map.end())){
                 if((partition_no > partition[begin]) && (partition[begin] == partition[end])){
                     continue;
@@ -835,7 +833,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
 
         in_file >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if((vertex_idx_map.find(begin) != vertex_idx_map.end()) && (vertex_idx_map.find(end) != vertex_idx_map.end())){
 
                 if((partition_no > partition[begin]) && (partition[begin] == partition[end])){
@@ -922,7 +920,7 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
 
         infile >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if(partition[begin] != partition[end]){
                 
                 if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
@@ -969,7 +967,7 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
 
         input_file >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if(partition[begin] != partition[end]){
                 begin_idx = vertex_idx_map[begin];
                 end_idx = vertex_idx_map[end]; 
@@ -1095,12 +1093,10 @@ void Graph::loadCutGraphFromCutEdgeFile(const std::string& file_path, const std:
 
         offset = offsets[begin] + neighbors_offset[begin];
         neighbors[offset] = end;
-
         neighbors_offset[begin] += 1;
 
         offset = offsets[end] + neighbors_offset[end];
         neighbors[offset] = begin;
-
         neighbors_offset[end] += 1;
     }
 
