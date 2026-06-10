@@ -1,4 +1,4 @@
-#ifndef DESC_DIST_RUN
+/*#ifndef DESC_DIST_RUN
 #define DESC_DIST_RUN
 
 #include <unordered_map>
@@ -21,4 +21,4 @@ void run_exp_wb_graph(const char* input, const char* outPath, DistributionCoordi
 void run_exp_db_graph(const char* input, const char* outPath, DistributionCoordinator &coordinator, int workerNum, int bufLen=1000);
 
 
-#endif
+#endif*/

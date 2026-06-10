@@ -1,5 +1,4 @@
 #include "countingalgo.h"
-#include "distributioncoordinator.hpp"
 #include <fstream>
 #include <mpi.h>
 

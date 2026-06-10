@@ -653,7 +653,6 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
         }
     }
 
-    VertexID begin_idx, end_idx;
 
     while (in_file >> begin)
     {
@@ -1183,106 +1182,8 @@ void Graph::printGraphMetaData()
     std::cout << "Max Degree: " << max_degree << ", Max Label Frequency: " << std::endl;
 }
 
-long long Graph::sequential_count_exact_square()
-{
-    long long exact_count = 0;
-    VertexID *nbrs_1, *nbrs_2, *nbrs_3, *nbrs_4;
-    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0, nbrs_3_cnt = 0, nbrs_4_cnt = 0;
-    VertexID v2, v3, v4;
-
-    // 1243 - Square
-    long long count_1 = 0;
-
-    for (VertexID v1 = 0; v1 < vertices_count; v1++)
-    {
-        nbrs_1 = getVertexNeighbors(v1, nbrs_1_cnt);
-        for (VertexID j = 0; j < nbrs_1_cnt; j++)
-        {
-            v2 = nbrs_1[j];
-            nbrs_2 = getVertexNeighbors(v2, nbrs_2_cnt);
-            for (VertexID k = 0; k < nbrs_1_cnt; k++)
-            {
-                count_1 = 0;
-                v3 = nbrs_1[k];
-                if(!(is_smaller(v2, v3))){
-                    continue;
-                }
-
-                //std::cout << "v1 : " << v1 << " v2 : " << v2 << " v3 : " << v3 << std::endl;
-                nbrs_3 = getVertexNeighbors(v3, nbrs_3_cnt);
-                count_1 = array_intersection(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
-                exact_count += count_1;
-            }
-        }
-    }
-
-    //std::cout << "Count 1 : " << exact_count << std::endl;
-
-    // 1234 - Square
-
-    long long count_2 = 0;
-
-    for (VertexID v1 = 0; v1 < vertices_count; v1++)
-    {
-        nbrs_1 = getVertexNeighbors(v1, nbrs_1_cnt);
-        for (VertexID j = 0; j < nbrs_1_cnt; j++)
-        {
-            v2 = nbrs_1[j];
-            nbrs_2 = getVertexNeighbors(v2, nbrs_2_cnt);
-            for (VertexID k = 0; k < nbrs_2_cnt; k++)
-            {
-                count_2 = 0;
-                v3 = nbrs_2[k];
-                nbrs_3 = getVertexNeighbors(v3, nbrs_3_cnt);
-                count_2 = array_intersection(nbrs_1, nbrs_1_cnt, nbrs_3, nbrs_3_cnt);
-                exact_count += count_2;
-            }
-        }
-    }
-
-    std::cout << "Count 2 : " << exact_count << std::endl;
-
-    // 1324 - Square
-    long long count_3 = 0;
-    std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
-    std::pair<VertexID, VertexID> search_pair;
-
-    for (VertexID v1 = 0; v1 < vertices_count; v1++)
-    {
-        nbrs_1 = getVertexNeighbors(v1, nbrs_1_cnt);
-
-        for (ui j = 0; j < nbrs_1_cnt; j++)
-        {
-            for (ui k = j+1; k < nbrs_1_cnt; k++)
-            {
-                search_pair = std::make_pair(std::min(nbrs_1[j], nbrs_1[k]), std::max(nbrs_1[j], nbrs_1[k]));
-                auto search = wedge_map.find(search_pair);
-                if (search == wedge_map.end())
-                {
-                    wedge_map[search_pair] = 1;
-                }
-                else
-                {
-                    wedge_map[search_pair] = wedge_map[search_pair] + 1;
-                }
-            }
-        }
-    }
-
-    for (auto const &[key, value] : wedge_map)
-    {
-        //std::cout << "Key : " << key.first << " " << key.second << " - " << value << std::endl;
-        count_3 += (value * (value - 1)) / 2;
-    }
-
-    std::cout << "Count 3 : " << count_3 << std::endl;
-
-    exact_count += count_3;
-
-    return exact_count;
-}
-
-long long Graph::count_exact_square_parallel()
+//Shared Memory Parallel Counting Square
+/*long long Graph::count_exact_square_parallel()
 {
 
     long long exact_count = 0;
@@ -1348,4 +1249,4 @@ long long Graph::count_exact_square_parallel()
     }
 
     return exact_count;
-}
+}*/

@@ -62,8 +62,7 @@ public:
     bool is_smaller(VertexID u, VertexID v);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
-    long long sequential_count_exact_square();
-    long long sma_count_exact_square();
+    //long long sma_count_exact_square();
 
     const ui* getOffsets() const {
         return offsets;

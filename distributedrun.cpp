@@ -1,4 +1,4 @@
-#include <fstream>
+/*#include <fstream>
 #include "partition.hpp"
 #include "countingalgo.h"
 #include "distributedrun.hpp"
@@ -125,4 +125,4 @@ void run_exp(const char *input, const char *outPath, DistributionCoordinator &hI
         std::vector<float> nodeToCnt;
         run_mpi_for_static_network(input, hIO, workerNum, bufLen, srcCompCost, workerCompCostMax, workerCompCostSum);
     }
-}
+}*/
