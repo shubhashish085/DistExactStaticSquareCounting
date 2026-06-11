@@ -15,6 +15,26 @@
 #include "types.h"
 #include "countingalgo.h"
 
+// int main(int argc, char** argv){
+
+//     std::string input_data_graph_file = argv[1];
+//     std::string vertex_partition_file = argv[2];
+//     std::string partition_no = argv[3];
+
+//     int n_partition = std::stoi(partition_no);
+
+//     Graph* graph = new Graph();
+//     graph->loadGraphFromFile(input_data_graph_file);
+
+//     long long comm_cost = CountingAlgorithm::naive_comm_cost_analysis(graph, vertex_partition_file, n_partition);
+
+//     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+//     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+//     std::cout << "Partition No : " << n_partition << std::endl;
+//     std::cout << "Naive Communication Cost : " << comm_cost << std::endl;
+
+// }
+
 /*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
@@ -25,34 +45,18 @@
 
     Graph* graph = new Graph();
     graph->loadGraphFromFile(input_data_graph_file);
+    
+    Graph* augmented_graph = new Graph();
+    graph->transformToAugmentedGraph(augmented_graph);
 
-    long long comm_cost = CountingAlgorithm::naive_comm_cost_analysis(graph, vertex_partition_file, n_partition);
+    long long exact_count = CountingAlgorithm::sequential_db_count_square(augmented_graph);
 
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
-    std::cout << "Partition No : " << n_partition << std::endl;
-    std::cout << "Naive Communication Cost : " << comm_cost << std::endl;
+    std::cout << "Exact Square Count : " << exact_count << std::endl;
 
 }*/
 
-
-/*int main(int argc, char** argv){
-
-    std::string input_data_graph_file = argv[1];
-    std::string output_data_graph_file = "output.txt";
-    std::string partition_no = argv[2];
-
-    int n_partition = std::stoi(partition_no);
-    DistributionCoordinator hIO(argc, argv);
-    //hIO.init(BATCH_LENGTH, n_partition);
-
-    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
-    std::cout << "Partition No : " << n_partition << std::endl;
-
-    run_exp_dynamic_network(input_data_graph_file, output_data_graph_file, hIO, n_partition, BATCH_LENGTH);
-    
-    //std::cout << "Naive Communication Cost : " << comm_cost << std::endl;
-}*/
 
 /*int main(int argc, char** argv){
 

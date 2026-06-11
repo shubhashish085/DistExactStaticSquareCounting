@@ -25,13 +25,16 @@ public:
     ui* offsets;
     VertexID * neighbors;
     NodeID* partition;
+    NodeID* local_partition;
 
     ui* g_offsets;
     VertexID * g_neighbors;
     
     std::unordered_map<VertexID, VertexID> vertex_idx_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
-    std::map<std::pair<VertexID, VertexID>, ui> wedge_map_comm; 
+    std::map<std::pair<VertexID, VertexID>, ui> wedge_map_comm;
+
+    std::vector<std::pair<VertexID, VertexID>> interface_edges;
 
     Graph(){
         
@@ -103,6 +106,18 @@ public:
 
     void getNeighborCount(const VertexID id, ui& count) const {
         count = offsets[id + 1] - offsets[id];
+    }
+
+    void printNeighbors(const VertexID id) const {
+        ui count = offsets[id + 1] - offsets[id];
+
+        std::cout << "VID : " << id << " --- " ;
+
+        for(ui i = 0; i < count; i++){
+            std::cout << neighbors[offsets[id] + i] << "   "; 
+        }
+
+        std::cout << std::endl;
     }
 
 

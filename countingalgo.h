@@ -24,6 +24,7 @@ public:
     static long long db_count_square_in_local_graph(Graph* graph);
     static long long db_count_square_in_interface_graph(Graph* graph);
 
+    static long long count_interface_edge_square(Graph* graph);
 };
 
 

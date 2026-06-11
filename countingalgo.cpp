@@ -1,6 +1,5 @@
 #include "countingalgo.h"
 #include <fstream>
-#include <mpi.h>
 
 
 static ui array_intersection(VertexID* array_1, ui array_1_len, VertexID* array_2, ui array_2_len) {
@@ -23,6 +22,29 @@ static ui array_intersection(VertexID* array_1, ui array_1_len, VertexID* array_
 
     return count;
 }
+
+static VertexID array_intersection_elem(VertexID* array_1, ui array_1_len, VertexID* array_2, ui array_2_len) {
+    ui i = 0, j = 0;
+    ui count = 0;
+
+    while (i < array_1_len && j < array_2_len) {
+        if (array_1[i] == array_2[j]) {
+            return array_1[i];
+            count++;
+            i++;
+            j++;
+        } 
+        else if (array_1[i] < array_2[j]) {
+            i++;
+        } 
+        else {
+            j++;
+        }
+    }
+
+    return count;
+}
+
 
 long long combinations(int n, int r)
 {
@@ -75,6 +97,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
     ui nbrs_1_cnt = 0, nbrs_2_cnt = 0, nbrs_3_cnt = 0, nbrs_4_cnt = 0;
     VertexID v2, v3, v4;
 
+
     // 1243 - Square
     long long count_1 = 0;
 
@@ -93,15 +116,21 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
                     continue;
                 }
 
+
                 //std::cout << "v1 : " << v1 << " v2 : " << v2 << " v3 : " << v3 << std::endl;
                 nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
                 count_1 = array_intersection(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
                 exact_count += count_1;
+
+                // if(count_1 > 0){
+                //     v4 = array_intersection_elem(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
+                //     std::cout << "Formed Square : (" << v1 << "," << v2 << "," << v3 << "," << v4 << ")" << std::endl; 
+                // }
             }
         }
     }
 
-    //std::cout << "Count 1 : " << exact_count << std::endl;
+    std::cout << "Count 1 : " << exact_count << std::endl;
     // 1234 - Square
 
     long long count_2 = 0;
@@ -119,6 +148,12 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
                 v3 = nbrs_2[k];
                 nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
                 count_2 = array_intersection(nbrs_1, nbrs_1_cnt, nbrs_3, nbrs_3_cnt);
+
+                // if(count_2 > 0){
+                //     v4 = array_intersection_elem(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
+                //     std::cout << "Formed Square : (" << v1 << "," << v2 << "," << v3 << "," << v4 << ")" << std::endl; 
+                // }
+
                 exact_count += count_2;
             }
         }
@@ -165,6 +200,42 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 
 }
 
+long long CountingAlgorithm::count_interface_edge_square(Graph* graph){
+
+    VertexID begin, end;
+    VertexID* begin_nbrs, *end_nbrs;
+    ui begin_nbr_cnt = 0, end_nbr_cnt = 0;
+    NodeID self_ptn, v3_ptn, v4_ptn;
+
+    long long interface_square_cnt = 0;
+
+    for(ui i = 0; i < (graph->interface_edges).size(); i++){
+        begin = (graph->interface_edges)[i].first;
+        end = (graph->interface_edges)[i].second;
+
+        self_ptn = graph->local_partition[begin];
+
+        begin_nbrs = graph->getVertexNeighbors(begin, begin_nbr_cnt);
+        end_nbrs = graph->getVertexNeighbors(end, end_nbr_cnt);
+
+        for(ui j = 0; j < begin_nbr_cnt; j++){
+            v3_ptn = graph->local_partition[begin_nbrs[j]];
+
+            for(ui k = 0; k < end_nbr_cnt; k++){                
+                v4_ptn = graph->local_partition[end_nbrs[k]];
+
+                if((begin_nbrs[j] != end_nbrs[k]) && (graph->checkEdgeExistence(begin_nbrs[j], end_nbrs[k])) && 
+                        (self_ptn != v3_ptn) && (self_ptn != v4_ptn)){
+                    interface_square_cnt += 1;
+                    std::cout << interface_square_cnt << "--  " << graph->local_partition[begin] << "," << graph->local_partition[end] << ","<< v3_ptn << "," << v4_ptn << std::endl;
+                }
+            }
+        }        
+    }
+
+    return interface_square_cnt;
+}
+
 
 long long CountingAlgorithm::db_count_square_in_cut_graph(Graph* cut_graph){
 
@@ -182,7 +253,8 @@ long long CountingAlgorithm::db_count_square_in_local_graph(Graph* local_graph){
 
 long long CountingAlgorithm::db_count_square_in_interface_graph(Graph* interface_graph){
 
-    long long exact_square_in_interface_graph = sequential_db_count_square(interface_graph);
+    //long long exact_square_in_interface_graph = sequential_db_count_square(interface_graph);
+    long long exact_square_in_interface_graph = count_interface_edge_square(interface_graph);
     
     return exact_square_in_interface_graph;
 }
@@ -202,13 +274,18 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
         Graph* interface_graph = new Graph();
         interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
 
-        Graph* interface_augmented_graph = new Graph();
-        interface_graph->transformToAugmentedGraph(interface_augmented_graph);
+
+        //Graph* interface_augmented_graph = new Graph();
+        //interface_graph->transformToAugmentedGraph(interface_augmented_graph);
+
+        
 
         local_square_count = db_count_square_in_local_graph(local_augmented_graph);
-        local_interface_square_count = db_count_square_in_interface_graph(interface_augmented_graph);
 
-        std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
+        //local_interface_square_count = db_count_square_in_interface_graph(interface_augmented_graph);
+        local_interface_square_count = db_count_square_in_interface_graph(interface_graph);
+
+        //std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
 
         global_square_count += local_square_count;
@@ -221,7 +298,7 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
     Graph* transformed_cut_graph = new Graph();
     cut_graph->transformToAugmentedGraph(transformed_cut_graph);
 
-    cut_graph_square_count = db_count_square_in_cut_graph(cut_graph);
+    cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
     std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
     
     global_square_count += cut_graph_square_count;

@@ -80,6 +80,9 @@ void Graph::loadGraphFromFile(const std::string &file_path)
         }
     }
 
+    // Hard-coded vertices
+    //vertices_count = 334863;
+
     VertexID begin, end;
 
     while (infile >> begin)
@@ -573,7 +576,7 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
         infile >> end;
         contains_in_partition = false;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count)
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count))
         {
             if (partition[begin] == partition_no || partition[end] == partition_no){
 
@@ -601,6 +604,7 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
     ui offset;
 
     degrees = new ui[vertices_count];
+    local_partition = new NodeID[vertices_count];
     std::fill(degrees, degrees + vertices_count, 0);
     offsets = new ui[vertices_count + 1];
 
@@ -622,10 +626,14 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
     {
         input_file >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
-            if (partition[begin] == partition_no || partition[end] == partition_no){
-                degrees[vertex_idx_map[begin]] += 1;
-                degrees[vertex_idx_map[end]] += 1;                
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if ((partition[begin] == partition_no) || (partition[end] == partition_no)){
+                begin_idx = vertex_idx_map[begin];
+                end_idx = vertex_idx_map[end]; 
+                degrees[begin_idx] += 1;
+                degrees[end_idx] += 1;
+                local_partition[begin_idx] = partition[begin];
+                local_partition[end_idx] = partition[end];                
             }
         }
     }
@@ -658,8 +666,8 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
     {
         in_file >> end;
 
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count){
-            if (partition[begin] == partition_no || partition[end] == partition_no){
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if ((partition[begin] == partition_no) || (partition[end] == partition_no)){
 
                 begin_idx = vertex_idx_map[begin];
                 end_idx = vertex_idx_map[end];
@@ -706,6 +714,8 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
         total_vertices_count++;
     }
 
+    std::cout << "######## Total Vertices Count : " << total_vertices_count << std::endl; 
+
     vertex_partition_file.close();
 
     std::ifstream vtx_ptn_file(vtx_ptn_file_path);
@@ -743,7 +753,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
         infile >> end;
 
         if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
-            if(partition[begin] != partition[end]){
+            if((partition[begin] != partition[end]) && ((partition[begin] == partition_no) || (partition[end] == partition_no))){
                 
                 if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
                     vertex_idx_map[begin] = vertices_count;
@@ -752,6 +762,9 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
 
                 if(vertex_idx_map.find(end) == vertex_idx_map.end()){
                     vertex_idx_map[end] = vertices_count;
+                    // if(vertices_count == 17 || vertices_count == 18 || vertices_count == 19 || vertices_count == 21){
+                    //     std::cout << "Idx : " << vertices_count << " - Begin : " << end << " ----- " << partition[end] << std::endl;
+                    // }
                     vertices_count++;
                 }                
             }
@@ -763,6 +776,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
     std::ifstream input_file(file_path);
 
     degrees = new ui[vertices_count];
+    local_partition = new NodeID[vertices_count];
     offsets = new ui[vertices_count + 1];
     std::fill(degrees, degrees + vertices_count, 0);
 
@@ -791,18 +805,30 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
         if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if((vertex_idx_map.find(begin) != vertex_idx_map.end()) && (vertex_idx_map.find(end) != vertex_idx_map.end())){
                 if((partition_no > partition[begin]) && (partition[begin] == partition[end])){
+                    //std::cout << "======= " << partition_no << " : (" << begin << ":" << partition[begin] << "-" << end << ")" << std::endl;
                     continue;
                 }
                 begin_idx = vertex_idx_map[begin];
                 end_idx = vertex_idx_map[end]; 
                 degrees[begin_idx] += 1;
                 degrees[end_idx] += 1;
+                local_partition[begin_idx] = partition[begin];
+                local_partition[end_idx] = partition[end];
                 edges_count++;
+
+                if((partition_no == partition[begin]) && (partition[begin] == partition[end])){
+                    interface_edges.push_back(std::make_pair(begin_idx, end_idx));
+                }
             }
         }
     }
 
+    std::cout << "Partition - " << partition_no << " Edge Count : " << edges_count << std::endl; 
+
     input_file.close();
+
+    offsets[0] = 0;
+    neighbors = new VertexID[edges_count * 2];
 
     for (VertexID i = 0; i < vertices_count; i++){
         offsets[i + 1] = offsets[i] + degrees[i];
@@ -811,9 +837,6 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
     std::ifstream in_file(file_path);
 
     line_count = 0, comment_line_count = 4;
-
-    offsets[0] = 0;
-    neighbors = new VertexID[edges_count * 2];
 
     std::vector<ui> neighbors_offset(vertices_count, 0);
 
@@ -898,6 +921,11 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
 
     vtx_ptn_file.close();
 
+    vertices_count = 0;
+    vertex_idx_map.clear();
+
+    std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
+
     ui line_count = 0, comment_line_count = 4;
     VertexID begin, end;
     std::string input_line;
@@ -913,7 +941,6 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
         }
     }
 
-    vertices_count = 0;
 
     while (infile >> begin){
 
@@ -924,11 +951,17 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
                 
                 if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
                     vertex_idx_map[begin] = vertices_count;
+                    // if(vertices_count == 925 || vertices_count == 715 || vertices_count == 716 || vertices_count == 717){
+                    //     std::cout << "Idx : " << vertices_count << " - Begin : " << begin << " ----- " << partition[begin] << std::endl;
+                    // }
                     vertices_count++;
                 }
 
                 if(vertex_idx_map.find(end) == vertex_idx_map.end()){
                     vertex_idx_map[end] = vertices_count;
+                    // if(vertices_count == 925 || vertices_count == 715 || vertices_count == 716 || vertices_count == 717){
+                    //     std::cout << "Idx : " << vertices_count << " - Begin : " << end << " ----- " << partition[end] << std::endl;
+                    // }
                     vertices_count++;
                 }                
             }
@@ -940,6 +973,7 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
     std::ifstream input_file(file_path);
 
     degrees = new ui[vertices_count];
+    local_partition = new NodeID[vertices_count];
     offsets = new ui[vertices_count + 1];
     std::fill(degrees, degrees + vertices_count, 0);
 
@@ -962,21 +996,32 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
     std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
     VertexID begin_idx, end_idx;
 
+    std::vector<VertexID> vec = {538, 156632, 240108, 240110};
+
     while (input_file >> begin){
 
-        input_file >> end;
+        input_file >> end;      
 
         if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+
             if(partition[begin] != partition[end]){
+                // if((std::find(vec.begin(), vec.end(), begin) != vec.end()) && (std::find(vec.begin(), vec.end(), end) != vec.end())){
+                //     std::cout << "Edge ---- (" << begin << "," << end << ")" << std::endl;
+                // }
+
                 begin_idx = vertex_idx_map[begin];
                 end_idx = vertex_idx_map[end]; 
                 degrees[begin_idx] += 1;
                 degrees[end_idx] += 1;
+                local_partition[begin_idx] = partition[begin];
+                local_partition[end_idx] = partition[end];
                 cut_edge_vtr.push_back(std::make_pair(begin_idx, end_idx));
                 edges_count++;
             }
         }
     }
+
+   
 
     input_file.close();
     
@@ -1004,6 +1049,8 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
 
         neighbors_offset[end] += 1;
     }
+
+    std::cout << "Cut Graph : Neighbor Loading Finished" << std::endl;
 
     for (ui i = 0; i < vertices_count; ++i){
         std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
@@ -1107,6 +1154,7 @@ void Graph::loadCutGraphFromCutEdgeFile(const std::string& file_path, const std:
 
 bool Graph::is_smaller(VertexID u, VertexID v){
 
+
     if(u == v){
         return false;
     }
@@ -1115,16 +1163,15 @@ bool Graph::is_smaller(VertexID u, VertexID v){
         return true;
     }
 
-    if((main_degrees[u] == main_degrees[v]) && u < v){
+    if((main_degrees[u] == main_degrees[v]) && (u < v)){
         return true;
     }
 
-    return false; 
-
+    return false;
 }
 
 
-void Graph::transformToAugmentedGraph(Graph *augmented_graph){
+void Graph::transformToAugmentedGraph(Graph* augmented_graph){
 
     augmented_graph->vertices_count = vertices_count;
     augmented_graph->edges_count = edges_count;
