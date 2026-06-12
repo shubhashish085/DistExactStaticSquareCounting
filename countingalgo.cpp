@@ -136,6 +136,37 @@ long long CountingAlgorithm::bfy_count_in_two_partition(Graph* graph, int l_ptn,
     return count_3;
 }
 
+long long CountingAlgorithm::bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no){
+
+    long long count = 0;
+    //std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+    
+    VertexID v1, v2;
+    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0;
+
+
+    for (NodeID i = 0; i < partition_count; i++){
+        if(i == partition_no){continue;}
+        for(NodeID j = i + 1; j < partition_count; j++){
+            if (j == partition_no){continue;}
+            for(ui k = 0; k < graph->ptn_wise_nbr_cnt[i]; k++){
+                v1 = graph->ptn_nbr_array[i][k];                
+                for(ui l = 0; l < graph->ptn_wise_nbr_cnt[j]; l++){
+                    v2 = graph->ptn_nbr_array[j][l];
+                    count += graph->get_wedge_cnt_by_two_vertices(v1, v2);                
+                }
+            }    
+        }        
+    }   
+
+    std::cout << "Butterfly Count in Three Partition : " << count << std::endl;
+
+    return count;
+}
+
+
+
 
 long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 
@@ -297,18 +328,18 @@ long long CountingAlgorithm::db_count_square_in_interface_graph(Graph* interface
 void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long global_square_count = 0, local_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
-    long long deductible_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
 
     for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
 
         Graph* local_graph = new Graph();
         local_graph->loadPartitionedLocalGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
 
-        Graph* local_augmented_graph = new Graph();
-        local_graph->transformToAugmentedGraph(local_augmented_graph);
+        // Graph* local_augmented_graph = new Graph();
+        // local_graph->transformToAugmentedGraph(local_augmented_graph);
 
-        Graph* interface_graph = new Graph();
-        interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
+        // Graph* interface_graph = new Graph();
+        // interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
 
 
         //Graph* interface_augmented_graph = new Graph();
@@ -316,34 +347,40 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
 
         
 
-        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        // local_square_count = db_count_square_in_local_graph(local_augmented_graph);
 
-        //local_interface_square_count = db_count_square_in_interface_graph(interface_augmented_graph);
-        local_interface_square_count = db_count_square_in_interface_graph(interface_graph);
+        // local_interface_square_count = db_count_square_in_interface_graph(interface_graph);
 
         //std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+        // std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
 
-        for(int u_ptn_idx = ptn_idx + 1; u_ptn_idx < partition_cnt; u_ptn_idx++){
-            deductible_count += bfy_count_in_two_partition(local_graph, ptn_idx, u_ptn_idx);
-        }
+        // for(int u_ptn_idx = ptn_idx + 1; u_ptn_idx < partition_cnt; u_ptn_idx++){
+        //     deductible_count += bfy_count_in_two_partition(local_graph, ptn_idx, u_ptn_idx);
+        // }
 
-        global_square_count += local_square_count;
-        global_square_count += local_interface_square_count;
+        local_graph->buildPartitionWiseNbrCntArray(partition_cnt, ptn_idx);
+        three_ptn_deductible_count += bfy_count_in_three_partition(local_graph, partition_cnt, ptn_idx);
+
+        // global_square_count += local_square_count;
+        // global_square_count += local_interface_square_count;
     }
 
-    Graph* cut_graph = new Graph();
-    cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+    // Graph* cut_graph = new Graph();
+    // cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
 
-    Graph* transformed_cut_graph = new Graph();
-    cut_graph->transformToAugmentedGraph(transformed_cut_graph);
+    // Graph* transformed_cut_graph = new Graph();
+    // cut_graph->transformToAugmentedGraph(transformed_cut_graph);
 
-    cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
-    std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    // cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    // std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
     
-    global_square_count += cut_graph_square_count;
+    // global_square_count += cut_graph_square_count;
 
-    global_square_count -= (2 * deductible_count);
+    // global_square_count -= (2 * deductible_count);
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Three Partition Deductible Square Count : " << three_ptn_deductible_count << std::endl;
+    std::cout << "==============================================" << std::endl;
 
     std::cout << "==============================================" << std::endl;
     std::cout << "Deductible Square Count : " << deductible_count << std::endl;

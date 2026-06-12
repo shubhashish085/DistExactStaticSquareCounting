@@ -296,229 +296,6 @@ void Graph::loadGraphFromFileForBothDirectionEdges(const std::string &file_path)
 
 
 
-void Graph::loadPartitionedGraphFromFile( const std::string &file_path, const std::string &vertex_partition_file_path, int partition_no)
-{
-
-    VertexID vertex_id, begin, end;
-    int partition_id;
-    bool contains_in_partition = false;
-
-    std::ifstream vertex_partition_file(vertex_partition_file_path);
-    std::ifstream vtx_ptn_file(vertex_partition_file_path);
-    std::ifstream infile(file_path);
-
-    if (!vertex_partition_file.is_open() || !infile.is_open())
-    {
-        std::cout << "Can not open the graph file " << vertex_partition_file_path << " or " << file_path << "." << std::endl;
-        exit(-1);
-    }
-
-    ui total_vertices_count = 0;
-
-    while (vertex_partition_file >> vertex_id)
-    {
-
-        vertex_partition_file >> partition_id;
-
-        if (partition_id == partition_no)
-        {
-            vertices.push_back(vertex_id);
-            vertex_idx_map[vertex_id] = vertices_count;
-            vertices_count++;
-        }
-
-        total_vertices_count++;
-    }
-
-    vertex_partition_file.close();
-
-    partition = new NodeID[total_vertices_count];
-
-    while (vtx_ptn_file >> vertex_id)
-    {
-        vtx_ptn_file >> partition_id;
-        partition[vertex_id] = partition_id;
-    }
-
-    vtx_ptn_file.close();
-
-    degrees = new ui[vertices_count];
-    ghost_vertices_count = 0;
-    std::fill(degrees, degrees + vertices_count, 0);
-
-    char type;
-    std::string input_line;
-    ui label = 0, offset;
-
-    std::cout << "Reading File............ " << std::endl;
-
-    ui line_count = 0, count = 0, comment_line_count = 4;
-
-    while (std::getline(infile, input_line))
-    {
-
-        if (input_line.rfind("#", 0) == 0)
-        {
-            line_count++;
-        }
-
-        if (line_count >= comment_line_count)
-        {
-            break;
-        }
-    }
-
-    ui ghost_edges_count = 0;
-
-    while (infile >> begin)
-    {
-
-        infile >> end;
-
-        if (begin != end && begin < total_vertices_count && end < total_vertices_count)
-        {
-            if (partition[begin] != partition_no && partition[end] == partition_no){
-
-                ghost_edges_count++;
-
-                if (ghost_vertex_map.find(begin) != ghost_vertex_map.end()) {
-                    ghost_vertex_map[begin] += 1;
-                } else {
-                    ghost_vertex_map[begin] = 1;
-                    ghost_vertices_count += 1;
-                }
-            } else if (partition[begin] == partition_no && partition[end] != partition_no){
-
-                ghost_edges_count++;
-
-                if (ghost_vertex_map.find(end) != ghost_vertex_map.end()) {
-                    ghost_vertex_map[end] += 1;
-                }
-                else{
-                    ghost_vertex_map[end] = 1;
-                    ghost_vertices_count += 1;
-                }
-            }
-
-            if (vertex_idx_map.find(begin) != vertex_idx_map.end())
-            {
-                degrees[vertex_idx_map[begin]] += 1;
-                contains_in_partition = true;
-            }
-
-            if (vertex_idx_map.find(end) != vertex_idx_map.end())
-            {
-                degrees[vertex_idx_map[end]] += 1;
-                contains_in_partition = true;
-            }
-
-            if (contains_in_partition)
-            {
-                edges_count++;
-            }
-
-            contains_in_partition = false;
-        }
-    }
-
-    infile.close();
-
-    std::ifstream input_file(file_path);
-
-    offsets = new ui[vertices_count + 1];
-    g_offsets = new ui[ghost_vertices_count + 1];
-    offsets[0] = 0;
-    g_offsets[0] = 0;
-
-    neighbors = new VertexID[edges_count * 2];
-    g_neighbors = new VertexID[ghost_edges_count];
-    max_degree = 0;
-
-    std::vector<ui> neighbors_offset(vertices_count, 0); // used for adjust neighbors with offset
-    std::vector<ui> g_neighbors_offset(ghost_vertices_count, 0);
-    VertexID id;
-
-    for (VertexID i = 0; i < vertices_count; i++){
-        /*id = vertices[i];
-        offsets[id + 1] = offsets[id] + degrees[id];*/
-        offsets[i + 1] = offsets[i] + degrees[i];
-    }
-
-    VertexID i = 0;
-    for (const auto &[key, value] : ghost_vertex_map)
-    {
-        ghost_vertex_idx_map[key] = i;
-        g_offsets[i + 1] = g_offsets[i] + value;
-        i++;
-    }
-
-    line_count = 0;
-
-    while (std::getline(input_file, input_line))
-    {
-        line_count++;
-        if (line_count >= comment_line_count)
-        {
-            break;
-        }
-    }
-
-    VertexID ghost_idx;
-    ui g_offset;
-    ui begin_idx, end_idx;
-
-    while (input_file >> begin)
-    {
-        input_file >> end;
-
-        if((begin == end) || (begin >= total_vertices_count) || (end >= total_vertices_count)){
-            continue;
-        }
-
-
-        if (vertex_idx_map.find(begin) != vertex_idx_map.end()){
-            begin_idx = vertex_idx_map[begin];
-            offset = offsets[begin_idx] + neighbors_offset[begin_idx];
-            neighbors[offset] = end;
-            neighbors_offset[begin] += 1;
-        }
-
-        if (vertex_idx_map.find(end) != vertex_idx_map.end()){
-            end_idx = vertex_idx_map[end];
-            offset = offsets[end_idx] + neighbors_offset[end_idx];
-            neighbors[offset] = begin;
-            neighbors_offset[end] += 1;
-        }
-
-        if (partition[begin] != partition_no && partition[end] == partition_no){
-            ghost_idx = ghost_vertex_idx_map[begin];
-            g_offset = g_offsets[ghost_idx] + g_neighbors_offset[ghost_idx];
-            g_neighbors[g_offset] = end;
-            g_neighbors_offset[ghost_idx] += 1;
-        }
-
-        if (partition[begin] == partition_no && partition[end] != partition_no){
-            ghost_idx = ghost_vertex_idx_map[end];
-            g_offset = g_offsets[ghost_idx] + g_neighbors_offset[ghost_idx];
-            g_neighbors[g_offset] = begin;
-            g_neighbors_offset[ghost_idx] += 1;
-        }
-    }
-
-    input_file.close();
-
-    for (ui i = 0; i < vertices_count; ++i)
-    {
-        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
-    }
-
-    for (ui i = 0; i < ghost_vertices_count; i++)
-    {
-        std::sort(g_neighbors + g_offsets[i], g_neighbors + g_offsets[i + 1]);
-    }
-}
-
-
 void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, const std::string &vertex_partition_file_path, int partition_no)
 {
 
@@ -1208,6 +985,56 @@ void Graph::transformToAugmentedGraph(Graph* augmented_graph){
     }
 
     std::cout << "Transformation Finished ...... " << std::endl;    
+}
+
+
+long long Graph::get_wedge_cnt_by_two_vertices(VertexID v1, VertexID v2){
+
+    long long count = 0;
+    VertexID* nbrs_1, *nbrs_2;
+    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0;
+    std::map<std::pair<VertexID, VertexID>, ui> ptn_wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+
+
+    nbrs_1 = getVertexNeighbors(v1, nbrs_1_cnt);
+    for (ui m = 0; m < nbrs_1_cnt; m++)
+    {
+        for (ui n = m+1; n < nbrs_1_cnt; n++)
+        {
+            search_pair = std::make_pair(std::min(nbrs_1[m], nbrs_1[n]), std::max(nbrs_1[m], nbrs_1[n]));
+            auto search = ptn_wedge_map.find(search_pair);
+            if (search == ptn_wedge_map.end()){
+                ptn_wedge_map[search_pair] = 1;
+            }
+            else{
+                ptn_wedge_map[search_pair] = ptn_wedge_map[search_pair] + 1;
+            }
+        }
+    }
+
+    nbrs_2 = getVertexNeighbors(v2, nbrs_2_cnt);
+
+    for (ui m = 0; m < nbrs_2_cnt; m++)
+    {
+        for (ui n = m+1; n < nbrs_2_cnt; n++)
+        {
+            search_pair = std::make_pair(std::min(nbrs_2[m], nbrs_2[n]), std::max(nbrs_2[m], nbrs_2[n]));
+            auto search = ptn_wedge_map.find(search_pair);
+            if (search == ptn_wedge_map.end()){
+                ptn_wedge_map[search_pair] = 1;
+            }
+            else{
+                ptn_wedge_map[search_pair] = ptn_wedge_map[search_pair] + 1;
+            }
+        }
+    }
+
+    for (auto const &[key, value] : ptn_wedge_map){
+        count += (value * (value - 1)) / 2;
+    }
+
+    return count;
 }
 
 

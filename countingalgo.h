@@ -25,6 +25,7 @@ public:
     static long long db_count_square_in_local_graph(Graph* graph);
     static long long db_count_square_in_interface_graph(Graph* graph);
     static long long bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn);
+    static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);
 
     static long long count_interface_edge_square(Graph* graph);
 };

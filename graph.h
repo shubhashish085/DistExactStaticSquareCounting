@@ -27,8 +27,8 @@ public:
     NodeID* partition;
     NodeID* local_partition;
 
-    ui* g_offsets;
-    VertexID * g_neighbors;
+    ui* ptn_wise_nbr_cnt;
+    VertexID** ptn_nbr_array;
     
     std::unordered_map<VertexID, VertexID> vertex_idx_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
@@ -55,7 +55,7 @@ public:
 public:
     void loadGraphFromFile(const std::string& file_path);
     void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
-    void loadPartitionedGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    //void loadPartitionedGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
@@ -65,6 +65,36 @@ public:
     bool is_smaller(VertexID u, VertexID v);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
+    void buildPartitionWiseNbrCntArray (int partition_count, int partition_no){
+        ptn_wise_nbr_cnt = new ui[partition_count];
+        std::fill(ptn_wise_nbr_cnt, ptn_wise_nbr_cnt + partition_count, 0);
+
+        ptn_nbr_array = new VertexID* [partition_count];
+
+        std::vector<ui> ptn_offset(partition_count, 0);
+        NodeID ptn;
+
+        for(ui i = 0; i < vertices_count; i++){
+            ptn = local_partition[i];
+            if(ptn != partition_no){
+                ptn_wise_nbr_cnt[ptn] += 1;
+            }
+        }
+
+        for(ui i = 0; i < partition_count; i++){
+            ptn_nbr_array[i] = new VertexID[ptn_wise_nbr_cnt[i]];
+        }
+
+        for(ui i = 0; i < vertices_count; i++){
+            ptn = local_partition[i];
+            if(ptn != partition_no){
+                ptn_nbr_array[ptn][ptn_offset[ptn]] = i;
+                ptn_offset[ptn] += 1;
+            }
+        } 
+    }
+
+    long long get_wedge_cnt_by_two_vertices(VertexID v1, VertexID v2);
     //long long sma_count_exact_square();
 
     const ui* getOffsets() const {
