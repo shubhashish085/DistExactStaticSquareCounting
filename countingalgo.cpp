@@ -23,7 +23,7 @@ static ui array_intersection(VertexID* array_1, ui array_1_len, VertexID* array_
     return count;
 }
 
-static VertexID array_intersection_elem(VertexID* array_1, ui array_1_len, VertexID* array_2, ui array_2_len) {
+/*static VertexID array_intersection_elem(VertexID* array_1, ui array_1_len, VertexID* array_2, ui array_2_len) {
     ui i = 0, j = 0;
     ui count = 0;
 
@@ -43,7 +43,7 @@ static VertexID array_intersection_elem(VertexID* array_1, ui array_1_len, Verte
     }
 
     return count;
-}
+}*/
 
 
 long long combinations(int n, int r)
@@ -90,6 +90,53 @@ long long CountingAlgorithm::aggregate_square_count(std::map<std::pair<VertexID,
 }
 
 
+long long CountingAlgorithm::bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn){
+
+    std::vector<VertexID> u_ptn_vertices;
+
+    for(ui i = 0; i < graph->vertices_count; i++){
+        if(graph->local_partition[i] == u_ptn){
+            u_ptn_vertices.push_back(i);
+        }
+    }
+
+    long long count_3 = 0;
+    std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+    VertexID* nbrs_1, v1;
+    ui nbrs_1_cnt = 0;
+
+    for (VertexID i = 0; i < u_ptn_vertices.size(); i++)
+    {
+        v1 = u_ptn_vertices[i];
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+
+        for (ui j = 0; j < nbrs_1_cnt; j++)
+        {
+            for (ui k = j+1; k < nbrs_1_cnt; k++)
+            {
+                search_pair = std::make_pair(std::min(nbrs_1[j], nbrs_1[k]), std::max(nbrs_1[j], nbrs_1[k]));
+                auto search = wedge_map.find(search_pair);
+                if (search == wedge_map.end()){
+                    wedge_map[search_pair] = 1;
+                }
+                else{
+                    wedge_map[search_pair] = wedge_map[search_pair] + 1;
+                }
+            }
+        }
+    }
+
+    for (auto const &[key, value] : wedge_map){
+        count_3 += (value * (value - 1)) / 2;
+    }
+
+    std::cout << "Butterfly Count in Two Partition (" << l_ptn << ", " << u_ptn << ") : "  << count_3 << std::endl;
+
+    return count_3;
+}
+
+
 long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 
     long long exact_count = 0;
@@ -116,16 +163,10 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
                     continue;
                 }
 
-
-                //std::cout << "v1 : " << v1 << " v2 : " << v2 << " v3 : " << v3 << std::endl;
                 nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
                 count_1 = array_intersection(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
                 exact_count += count_1;
 
-                // if(count_1 > 0){
-                //     v4 = array_intersection_elem(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
-                //     std::cout << "Formed Square : (" << v1 << "," << v2 << "," << v3 << "," << v4 << ")" << std::endl; 
-                // }
             }
         }
     }
@@ -148,12 +189,6 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
                 v3 = nbrs_2[k];
                 nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
                 count_2 = array_intersection(nbrs_1, nbrs_1_cnt, nbrs_3, nbrs_3_cnt);
-
-                // if(count_2 > 0){
-                //     v4 = array_intersection_elem(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
-                //     std::cout << "Formed Square : (" << v1 << "," << v2 << "," << v3 << "," << v4 << ")" << std::endl; 
-                // }
-
                 exact_count += count_2;
             }
         }
@@ -227,7 +262,7 @@ long long CountingAlgorithm::count_interface_edge_square(Graph* graph){
                 if((begin_nbrs[j] != end_nbrs[k]) && (graph->checkEdgeExistence(begin_nbrs[j], end_nbrs[k])) && 
                         (self_ptn != v3_ptn) && (self_ptn != v4_ptn)){
                     interface_square_cnt += 1;
-                    std::cout << interface_square_cnt << "--  " << graph->local_partition[begin] << "," << graph->local_partition[end] << ","<< v3_ptn << "," << v4_ptn << std::endl;
+                    //std::cout << interface_square_cnt << "--  " << graph->local_partition[begin] << "," << graph->local_partition[end] << ","<< v3_ptn << "," << v4_ptn << std::endl;
                 }
             }
         }        
@@ -262,6 +297,7 @@ long long CountingAlgorithm::db_count_square_in_interface_graph(Graph* interface
 void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long global_square_count = 0, local_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
+    long long deductible_count = 0;
 
     for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
 
@@ -288,6 +324,10 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
         //std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
 
+        for(int u_ptn_idx = ptn_idx + 1; u_ptn_idx < partition_cnt; u_ptn_idx++){
+            deductible_count += bfy_count_in_two_partition(local_graph, ptn_idx, u_ptn_idx);
+        }
+
         global_square_count += local_square_count;
         global_square_count += local_interface_square_count;
     }
@@ -303,8 +343,18 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
     
     global_square_count += cut_graph_square_count;
 
+    global_square_count -= (2 * deductible_count);
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Deductible Square Count : " << deductible_count << std::endl;
+    std::cout << "==============================================" << std::endl;
+
     std::cout << "==============================================" << std::endl;
     std::cout << "Global Square Count : " << global_square_count << std::endl;
     std::cout << "==============================================" << std::endl;
+
+    
+
+
 
 }

@@ -14,6 +14,7 @@ public:
     
     static long long sequential_wb_count_square(Graph* graph);
     static long long sequential_db_count_square(Graph* graph);
+    
 
     static void wb_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
     static void opt_wb_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
@@ -23,6 +24,7 @@ public:
     static long long db_count_square_in_cut_graph(Graph* graph);
     static long long db_count_square_in_local_graph(Graph* graph);
     static long long db_count_square_in_interface_graph(Graph* graph);
+    static long long bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn);
 
     static long long count_interface_edge_square(Graph* graph);
 };

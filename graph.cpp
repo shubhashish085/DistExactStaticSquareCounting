@@ -762,9 +762,6 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
 
                 if(vertex_idx_map.find(end) == vertex_idx_map.end()){
                     vertex_idx_map[end] = vertices_count;
-                    // if(vertices_count == 17 || vertices_count == 18 || vertices_count == 19 || vertices_count == 21){
-                    //     std::cout << "Idx : " << vertices_count << " - Begin : " << end << " ----- " << partition[end] << std::endl;
-                    // }
                     vertices_count++;
                 }                
             }
@@ -951,17 +948,11 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
                 
                 if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
                     vertex_idx_map[begin] = vertices_count;
-                    // if(vertices_count == 925 || vertices_count == 715 || vertices_count == 716 || vertices_count == 717){
-                    //     std::cout << "Idx : " << vertices_count << " - Begin : " << begin << " ----- " << partition[begin] << std::endl;
-                    // }
                     vertices_count++;
                 }
 
                 if(vertex_idx_map.find(end) == vertex_idx_map.end()){
                     vertex_idx_map[end] = vertices_count;
-                    // if(vertices_count == 925 || vertices_count == 715 || vertices_count == 716 || vertices_count == 717){
-                    //     std::cout << "Idx : " << vertices_count << " - Begin : " << end << " ----- " << partition[end] << std::endl;
-                    // }
                     vertices_count++;
                 }                
             }
@@ -1005,10 +996,7 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
         if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
 
             if(partition[begin] != partition[end]){
-                // if((std::find(vec.begin(), vec.end(), begin) != vec.end()) && (std::find(vec.begin(), vec.end(), end) != vec.end())){
-                //     std::cout << "Edge ---- (" << begin << "," << end << ")" << std::endl;
-                // }
-
+                
                 begin_idx = vertex_idx_map[begin];
                 end_idx = vertex_idx_map[end]; 
                 degrees[begin_idx] += 1;
