@@ -98,7 +98,7 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);     
+    CountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);     
 
     std::cout << "==================================================" << std::endl;
 
