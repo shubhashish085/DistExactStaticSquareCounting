@@ -17,13 +17,18 @@ public:
     ui ghost_vertices_count;
     ui vertices_count;
     ui edges_count;
+    ui cut_edges_count;
     ui max_degree;
 
     ui* degrees;
+    ui* ghost_degrees;
     ui* main_degrees;
 
     ui* offsets;
     VertexID * neighbors;
+    ui* ghost_offsets;
+    VertexID* ghost_neighbors;
+
     NodeID* partition;
     NodeID* local_partition;
 
@@ -31,6 +36,7 @@ public:
     VertexID** ptn_nbr_array;
     
     std::unordered_map<VertexID, VertexID> vertex_idx_map;
+    std::unordered_map<VertexID, VertexID> other_ptn_vertex_idx_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map_comm;
 
@@ -57,6 +63,7 @@ public:
     void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
     //void loadPartitionedGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file);
@@ -123,8 +130,13 @@ public:
     }
 
     ui * getVertexNeighbors(const VertexID id, ui& count) const {
-        count = offsets[id + 1] - offsets[id]; // used for neighbor count
+        count = offsets[id + 1] - offsets[id];
         return neighbors + offsets[id];
+    }
+
+    ui * getVertexGhostNeighbors(const VertexID id, ui& count) const {
+        count = ghost_offsets[id + 1] - ghost_offsets[id];
+        return ghost_neighbors + ghost_offsets[id];
     }
 
     ui * getVertexNeighbors_partitioned(const VertexID vid, ui& count) const {

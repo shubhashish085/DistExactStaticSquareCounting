@@ -90,6 +90,32 @@ long long CountingAlgorithm::aggregate_square_count(std::map<std::pair<VertexID,
 }
 
 
+long long CountingAlgorithm::count_square_from_other_ptn_per_vertex(Graph* graph){
+
+    long long count = 0;
+    VertexID v1, v2;
+    VertexID* nbrs, *v1_nbrs, *v2_nbrs;
+    ui nbrs_cnt = 0, v1_nbrs_cnt = 0, v2_nbrs_cnt = 0;
+    
+
+    for(VertexID i = 0; i < graph->ghost_vertices_count; ++i){
+        
+        nbrs = graph->getVertexGhostNeighbors(i, nbrs_cnt);
+        for(VertexID j = 0; j < nbrs_cnt; j++){
+            v1 = nbrs[j];
+            v1_nbrs = graph->getVertexNeighbors(v1, v1_nbrs_cnt);
+            for(VertexID k = j + 1; k < nbrs_cnt; k++){
+                v2 = nbrs[k];
+                v2_nbrs = graph->getVertexNeighbors(v2, v2_nbrs_cnt);
+                count += array_intersection(v1_nbrs, v1_nbrs_cnt, v2_nbrs, v2_nbrs_cnt);
+            }
+        }
+    }
+
+    return count;
+}
+
+
 long long CountingAlgorithm::bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn){
 
     std::vector<VertexID> u_ptn_vertices;
@@ -390,8 +416,66 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
     std::cout << "Global Square Count : " << global_square_count << std::endl;
     std::cout << "==============================================" << std::endl;
 
+}
+
+
+void CountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long global_square_count = 0, local_square_count = 0, local_cut_edge_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* local_augmented_graph = new Graph();
+        local_graph->transformToAugmentedGraph(local_augmented_graph);
+
+        // Graph* interface_graph = new Graph();
+        // interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+
+        //Graph* interface_augmented_graph = new Graph();
+        //interface_graph->transformToAugmentedGraph(interface_augmented_graph);
+        
+
+        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
+
+        // local_interface_square_count = db_count_square_in_interface_graph(interface_graph);
+
+        std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
+        //std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+
+        global_square_count += local_square_count;
+        global_square_count += local_cut_edge_square_count;
+        // global_square_count += local_interface_square_count;
+    }
+
+    // Graph* cut_graph = new Graph();
+    // cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+
+    // Graph* transformed_cut_graph = new Graph();
+    // cut_graph->transformToAugmentedGraph(transformed_cut_graph);
+
+    // cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    // std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
     
+    // global_square_count += cut_graph_square_count;
 
+    // global_square_count -= (2 * deductible_count);
 
+    // std::cout << "==============================================" << std::endl;
+    // std::cout << "Three Partition Deductible Square Count : " << three_ptn_deductible_count << std::endl;
+    // std::cout << "==============================================" << std::endl;
 
+    // std::cout << "==============================================" << std::endl;
+    // std::cout << "Deductible Square Count : " << deductible_count << std::endl;
+    // std::cout << "==============================================" << std::endl;
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Global Square Count : " << global_square_count << std::endl;
+    std::cout << "==============================================" << std::endl;
 }

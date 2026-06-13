@@ -21,11 +21,13 @@ public:
 
     static void db_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
     static void db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void optimized_db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static long long db_count_square_in_cut_graph(Graph* graph);
     static long long db_count_square_in_local_graph(Graph* graph);
     static long long db_count_square_in_interface_graph(Graph* graph);
+    static long long count_square_from_other_ptn_per_vertex(Graph* graph);
     static long long bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn);
-    static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);
+    static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);    
 
     static long long count_interface_edge_square(Graph* graph);
 };
