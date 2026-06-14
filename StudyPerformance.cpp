@@ -10,38 +10,21 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <mpi.h>
 
 #include "matchingcommand.h"
 #include "types.h"
 #include "countingalgo.h"
+#include "distributedcountingalgo.h"
 
-// int main(int argc, char** argv){
-
-//     std::string input_data_graph_file = argv[1];
-//     std::string vertex_partition_file = argv[2];
-//     std::string partition_no = argv[3];
-
-//     int n_partition = std::stoi(partition_no);
-
-//     Graph* graph = new Graph();
-//     graph->loadGraphFromFile(input_data_graph_file);
-
-//     long long comm_cost = CountingAlgorithm::naive_comm_cost_analysis(graph, vertex_partition_file, n_partition);
-
-//     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
-//     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
-//     std::cout << "Partition No : " << n_partition << std::endl;
-//     std::cout << "Naive Communication Cost : " << comm_cost << std::endl;
-
-// }
-
-/*int main(int argc, char** argv){
+// Sequential Square Count
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
-    std::string vertex_partition_file = argv[2];
-    std::string partition_no = argv[3];
+    //std::string vertex_partition_file = argv[2];
+    //std::string partition_no = argv[3];
 
-    int n_partition = std::stoi(partition_no);
+    //int n_partition = std::stoi(partition_no);
 
     Graph* graph = new Graph();
     graph->loadGraphFromFile(input_data_graph_file);
@@ -52,12 +35,13 @@
     long long exact_count = CountingAlgorithm::sequential_db_count_square(augmented_graph);
 
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
-    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    //std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Exact Square Count : " << exact_count << std::endl;
 
-}*/
+}
 
 
+// Wedge Based Square Count
 /*int main(int argc, char** argv){
 
     long long wedge_count = 0;
@@ -86,7 +70,7 @@
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -102,5 +86,25 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
+
+
+/*int main(int argc, char** argv){
+
+    MPI_Init(&argc, &argv);
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    DistributedCountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    MPI_Finalize();
+}*/
 

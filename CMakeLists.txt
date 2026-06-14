@@ -13,6 +13,8 @@ set(DISTRIBUTED_SQUARE_COUNTING_FILE_LIST
         commandparser.cpp
         countingalgo.h
         countingalgo.cpp
+        distributedcountingalgo.h
+        distributedcountingalgo.cpp
         distributedrun.hpp
         distributedrun.cpp
         graph.h

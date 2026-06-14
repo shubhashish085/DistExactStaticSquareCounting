@@ -1,5 +1,5 @@
-#ifndef DSC_ALGORITHM_H
-#define DSC_ALGORITHM_H
+#ifndef DESC_ALGORITHM_H
+#define DESC_ALGORITHM_H
 
 #include <map>
 #include "graph.h"
