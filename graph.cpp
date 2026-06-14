@@ -729,7 +729,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
         total_vertices_count++;
     }
 
-    std::cout << "######## Total Vertices Count : " << total_vertices_count << std::endl; 
+    //std::cout << "######## Total Vertices Count : " << total_vertices_count << std::endl; 
 
     vertex_partition_file.close();
 
@@ -817,7 +817,6 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
         if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if((vertex_idx_map.find(begin) != vertex_idx_map.end()) && (vertex_idx_map.find(end) != vertex_idx_map.end())){
                 if((partition_no > partition[begin]) && (partition[begin] == partition[end])){
-                    //std::cout << "======= " << partition_no << " : (" << begin << ":" << partition[begin] << "-" << end << ")" << std::endl;
                     continue;
                 }
                 begin_idx = vertex_idx_map[begin];
@@ -835,7 +834,7 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
         }
     }
 
-    std::cout << "Partition - " << partition_no << " Edge Count : " << edges_count << std::endl; 
+    //std::cout << "Partition - " << partition_no << " Edge Count : " << edges_count << std::endl; 
 
     input_file.close();
 
