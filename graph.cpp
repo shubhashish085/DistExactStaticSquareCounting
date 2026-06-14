@@ -12,7 +12,7 @@
 void Graph::loadGraphFromFile(const std::string &file_path)
 {
 
-    std::cout << "############# Loading Graph With Edges ###############" << std::endl;
+    //std::cout << "############# Loading Graph With Edges ###############" << std::endl;
 
     std::ifstream infile(file_path);
 
@@ -26,7 +26,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
     std::string input_line;
     ui label = 0;
 
-    std::cout << "Reading File............ " << std::endl;
+    //std::cout << "Reading File............ " << std::endl;
 
     ui line_count = 0, count = 0, comment_line_count = 4;
 
@@ -57,7 +57,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
                         {
 
                             vertices_count = stoi(token);
-                            std::cout << "Vertex Count : " << vertices_count << std::endl;
+                            //std::cout << "Vertex Count : " << vertices_count << std::endl;
                             degrees = new ui[vertices_count];
                             std::fill(degrees, degrees + vertices_count, 0);
                             count = 1;
@@ -67,8 +67,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
                             edges_count = stoi(token);
                             count = 0;
                         }
-                        std::cout << "Vertices Count : " << vertices_count << " Edges Count : " << edges_count
-                                  << std::endl;
+                        //std::cout << "Vertices Count : " << vertices_count << " Edges Count : " << edges_count << std::endl;
                     }
                 }
             }
@@ -107,7 +106,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
     neighbors = new VertexID[edges_count * 2];
     max_degree = 0;
 
-    std::cout << "Initialization Finished" << std::endl;
+    //std::cout << "Initialization Finished" << std::endl;
 
     LabelID max_label_id = 0, begin_vtx_label, end_vtx_label;
     std::vector<ui> neighbors_offset(vertices_count, 0); // used for adjust neighbors with offset

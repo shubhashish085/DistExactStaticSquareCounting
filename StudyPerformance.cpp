@@ -21,22 +21,32 @@
 int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
-    //std::string vertex_partition_file = argv[2];
-    //std::string partition_no = argv[3];
 
-    //int n_partition = std::stoi(partition_no);
-
+    clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
     graph->loadGraphFromFile(input_data_graph_file);
-    
+    double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
+
+
+    clock_t transformation_begin_clock = clock();
     Graph* augmented_graph = new Graph();
     graph->transformToAugmentedGraph(augmented_graph);
+    double transformation_time = (double(clock() - transformation_begin_clock)) / CLOCKS_PER_SEC;    
 
+    clock_t counting_begin_clock = clock();
     long long exact_count = CountingAlgorithm::sequential_db_count_square(augmented_graph);
+    double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
 
+    double total_time = input_read_time + transformation_time + counting_time;    
+
+    std::cout << "==============================================" << std::endl;
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
-    //std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
-    std::cout << "Exact Square Count : " << exact_count << std::endl;
+    std::cout << "Exact Square Count : " << exact_count << std::endl;    
+    std::cout << "Input File Reading Time : " << input_read_time << " seconds" << std::endl;
+    std::cout << "Transformation Time : " << transformation_time << " seconds" << std::endl;
+    std::cout << "Counting Time : " << counting_time << " seconds" << std::endl;
+    std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
+    std::cout << "==============================================" << std::endl;
 
 }
 
