@@ -18,7 +18,7 @@
 #include "distributedcountingalgo.h"
 
 // Sequential Square Count
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -48,7 +48,7 @@ int main(int argc, char** argv){
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}
+}*/
 
 
 // Wedge Based Square Count
@@ -99,7 +99,7 @@ int main(int argc, char** argv){
 }*/
 
 
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -116,5 +116,5 @@ int main(int argc, char** argv){
     DistributedCountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
-}*/
+}
 

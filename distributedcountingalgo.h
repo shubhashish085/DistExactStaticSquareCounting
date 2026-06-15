@@ -10,6 +10,7 @@ class DistributedCountingAlgorithm {
 public:
 
     static void optimized_db_count_square_in_whole_ptn_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count); 
+    static void optimized_db_count_square_in_whole_graph_bidirection_edges_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count); 
 };
 
 

@@ -64,8 +64,11 @@ public:
     //void loadPartitionedGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
+    void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file);
     void printGraphMetaData();
 
