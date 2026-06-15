@@ -22,6 +22,8 @@ public:
     static void db_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
     static void db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void optimized_db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void optimized_db_count_square_in_bidirectional_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+
     static long long db_count_square_in_cut_graph(Graph* graph);
     static long long db_count_square_in_local_graph(Graph* graph);
     static long long db_count_square_in_interface_graph(Graph* graph);
