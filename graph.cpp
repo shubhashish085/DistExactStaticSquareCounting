@@ -1227,8 +1227,10 @@ void Graph::loadPartitionedInterfaceGraphBidirection(const std::string& file_pat
                     continue;
                 }
                 begin_idx = vertex_idx_map[begin];
+                end_idx = vertex_idx_map[end];
                 degrees[begin_idx] += 1;
                 local_partition[begin_idx] = partition[begin];
+                local_partition[end_idx] = partition[end];
                 edges_count++;
 
                 if((partition_no == partition[begin]) && (partition[begin] == partition[end]) && (begin < end)){
@@ -1569,8 +1571,6 @@ void Graph::loadCutGraphBidirection(const std::string& file_path, const std::str
     std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
     VertexID begin_idx, end_idx;
 
-    std::vector<VertexID> vec = {538, 156632, 240108, 240110};
-
     while (input_file >> begin){
 
         input_file >> end;      
@@ -1583,6 +1583,7 @@ void Graph::loadCutGraphBidirection(const std::string& file_path, const std::str
                 end_idx = vertex_idx_map[end]; 
                 degrees[begin_idx] += 1;
                 local_partition[begin_idx] = partition[begin];
+                local_partition[end_idx] = partition[end];
                 edges_count++;
 
                 if(begin < end){
