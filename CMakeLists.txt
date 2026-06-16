@@ -9,6 +9,8 @@ set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp -O3 -g -Wall -march=native -pthread")
 
 set(DISTRIBUTED_SQUARE_COUNTING_FILE_LIST
+        analysis.h
+        analysis.cpp
         commandparser.h
         commandparser.cpp
         countingalgo.h

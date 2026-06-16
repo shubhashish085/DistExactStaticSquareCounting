@@ -346,6 +346,7 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
     }
 
     edges_count = 0;
+    cut_edges_count = 0;
 
     while (infile >> begin){
 
@@ -409,7 +410,11 @@ void Graph::loadPartitionedLocalGraphFromFile(const std::string &file_path, cons
                 degrees[begin_idx] += 1;
                 degrees[end_idx] += 1;
                 local_partition[begin_idx] = partition[begin];
-                local_partition[end_idx] = partition[end];                
+                local_partition[end_idx] = partition[end];
+
+                if(partition[begin] != partition[end]){
+                    cut_edges_count++;
+                }                
             }
         }
     }

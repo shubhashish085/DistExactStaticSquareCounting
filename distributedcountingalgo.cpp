@@ -264,9 +264,9 @@ void DistributedCountingAlgorithm::optimized_db_count_square_in_whole_graph_bidi
 
         clock_t read_begin_clock = clock();
         Graph* local_graph = new Graph();
-        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, world_rank);
+        local_graph->loadPartitionedLocalGraphWoCutEdgesBidirection(file_path, vertex_partition_file_path, world_rank);
         Graph* interface_graph = new Graph();
-        interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, world_rank);
+        interface_graph->loadPartitionedInterfaceGraphBidirection(file_path, vertex_partition_file_path, world_rank);
         double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC; 
 
         clock_t transformation_begin_clock = clock();
@@ -301,7 +301,7 @@ void DistributedCountingAlgorithm::optimized_db_count_square_in_whole_graph_bidi
 
         read_begin_clock = clock();
         Graph* cut_graph = new Graph();
-        cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+        cut_graph->loadCutGraphBidirection(file_path, vertex_partition_file_path);
         input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;
 
         transformation_begin_clock = clock();
@@ -335,9 +335,9 @@ void DistributedCountingAlgorithm::optimized_db_count_square_in_whole_graph_bidi
 
         clock_t read_begin_clock = clock();
         Graph* local_graph = new Graph();
-        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, world_rank);
+        local_graph->loadPartitionedLocalGraphWoCutEdgesBidirection(file_path, vertex_partition_file_path, world_rank);
         Graph* interface_graph = new Graph();
-        interface_graph->loadPartitionedInterfaceGraphFromFile(file_path, vertex_partition_file_path, world_rank);
+        interface_graph->loadPartitionedInterfaceGraphBidirection(file_path, vertex_partition_file_path, world_rank);
         double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC; 
 
         clock_t transformation_begin_clock = clock();

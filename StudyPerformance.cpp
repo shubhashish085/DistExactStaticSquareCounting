@@ -15,6 +15,7 @@
 #include "matchingcommand.h"
 #include "types.h"
 #include "countingalgo.h"
+#include "analysis.h"
 #include "distributedcountingalgo.h"
 
 // Sequential Square Count
@@ -81,7 +82,7 @@
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -98,7 +99,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 
 //Undirected graph Multiple Partitions
@@ -122,7 +123,7 @@ int main(int argc, char** argv){
 }*/
 
 //Bidirectional Edges
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -139,5 +140,25 @@ int main(int argc, char** argv){
     DistributedCountingAlgorithm::optimized_db_count_square_in_whole_graph_bidirection_edges_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
+}
+
+//Analysis
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+
+    std::cout << "====================================================================================" << std::endl;
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    Analysis::analyse_optimized_db_count_square_in_whole_ptn_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);
+    std::cout << "=====================================================================================" << std::endl;
 }*/
 
