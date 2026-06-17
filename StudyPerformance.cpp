@@ -123,7 +123,7 @@
 }*/
 
 //Bidirectional Edges
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -140,10 +140,10 @@ int main(int argc, char** argv){
     DistributedCountingAlgorithm::optimized_db_count_square_in_whole_graph_bidirection_edges_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
-}
+}*/
 
 //Analysis
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -160,5 +160,5 @@ int main(int argc, char** argv){
 
     Analysis::analyse_optimized_db_count_square_in_whole_ptn_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);
     std::cout << "=====================================================================================" << std::endl;
-}*/
+}
 
