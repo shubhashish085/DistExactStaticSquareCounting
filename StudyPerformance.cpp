@@ -143,7 +143,7 @@
 }*/
 
 //Analysis
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -160,5 +160,26 @@ int main(int argc, char** argv){
 
     Analysis::analyse_optimized_db_count_square_in_whole_ptn_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);
     std::cout << "=====================================================================================" << std::endl;
+}*/
+
+
+//
+int main(int argc, char** argv){
+
+    MPI_Init(&argc, &argv);
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    DistributedCountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_parallel_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    MPI_Finalize();
 }
 
