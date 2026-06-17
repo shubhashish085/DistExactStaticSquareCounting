@@ -228,7 +228,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
         }
     }
 
-    std::cout << "Count 1 : " << exact_count << std::endl;
+    //std::cout << "Count 1 : " << exact_count << std::endl;
     // 1234 - Square
 
     long long count_2 = 0;
@@ -251,7 +251,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
         }
     }
 
-    std::cout << "Count 2 : " << exact_count << std::endl;
+    //std::cout << "Count 2 : " << exact_count << std::endl;
 
     // 1324 - Square
     long long count_3 = 0;
@@ -284,7 +284,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
         count_3 += (value * (value - 1)) / 2;
     }
 
-    std::cout << "Count 3 : " << count_3 << std::endl;
+    //std::cout << "Count 3 : " << count_3 << std::endl;
 
     exact_count += count_3;
 
