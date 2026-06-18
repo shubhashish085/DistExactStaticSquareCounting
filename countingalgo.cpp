@@ -329,6 +329,38 @@ long long CountingAlgorithm::count_interface_edge_square(Graph* graph){
 }
 
 
+long long CountingAlgorithm::count_interface_edge_square_optimized(Graph* graph){
+
+    VertexID begin, end, min_vtx, max_vtx;
+    VertexID* begin_nbrs, *end_nbrs;
+    ui begin_nbr_cnt = 0, end_nbr_cnt = 0;
+
+    long long interface_square_cnt = 0;
+
+    for(ui i = 0; i < (graph->interface_edges).size(); i++){
+        begin = (graph->interface_edges)[i].first;
+        end = (graph->interface_edges)[i].second;
+
+        begin_nbrs = graph->getVertexNeighbors(begin, begin_nbr_cnt);
+        end_nbrs = graph->getVertexNeighbors(end, end_nbr_cnt);
+
+        for(ui j = 0; j < begin_nbr_cnt; j++){
+            for(ui k = 0; k < end_nbr_cnt; k++){
+
+                min_vtx =  std::min(begin_nbrs[j], end_nbrs[k]);
+                max_vtx =  std::max(begin_nbrs[j], end_nbrs[k]); 
+
+                if((min_vtx != max_vtx) && ((graph->other_ptn_edges).find(std::make_pair(min_vtx, max_vtx)) != (graph->other_ptn_edges).end())){
+                    interface_square_cnt += 1;
+                }
+            }
+        }        
+    }
+
+    return interface_square_cnt;
+}
+
+
 long long CountingAlgorithm::db_count_square_in_cut_graph(Graph* cut_graph){
 
     long long exact_square_in_cut_graph = sequential_db_count_square(cut_graph);
@@ -347,6 +379,13 @@ long long CountingAlgorithm::db_count_square_in_interface_graph(Graph* interface
 
     //long long exact_square_in_interface_graph = sequential_db_count_square(interface_graph);
     long long exact_square_in_interface_graph = count_interface_edge_square(interface_graph);
+    
+    return exact_square_in_interface_graph;
+}
+
+long long CountingAlgorithm::db_count_square_in_interface_graph_optimized(Graph* interface_graph){
+
+    long long exact_square_in_interface_graph = count_interface_edge_square_optimized(interface_graph);
     
     return exact_square_in_interface_graph;
 }
@@ -438,6 +477,52 @@ void CountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_seq(const s
         local_square_count = db_count_square_in_local_graph(local_augmented_graph);
         local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
         local_interface_square_count = db_count_square_in_interface_graph(interface_graph);
+
+        std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+
+        global_square_count += local_square_count;
+        global_square_count += local_cut_edge_square_count;
+        global_square_count += local_interface_square_count;
+    }
+
+    Graph* cut_graph = new Graph();
+    cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+
+    Graph* transformed_cut_graph = new Graph();
+    cut_graph->transformToAugmentedGraph(transformed_cut_graph);
+
+    cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    
+    global_square_count += cut_graph_square_count;
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Global Square Count : " << global_square_count << std::endl;
+    std::cout << "==============================================" << std::endl;
+}
+
+
+void CountingAlgorithm::db_count_square_with_interface_graph_optimization(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long global_square_count = 0, local_square_count = 0, local_cut_edge_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* interface_graph = new Graph();
+        interface_graph->loadPartitionedInterfaceGraphOptimized(file_path, vertex_partition_file_path, ptn_idx); 
+
+        Graph* local_augmented_graph = new Graph();
+        local_graph->transformToAugmentedGraph(local_augmented_graph);        
+
+        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
+        local_interface_square_count = db_count_square_in_interface_graph_optimized(interface_graph);
 
         std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;

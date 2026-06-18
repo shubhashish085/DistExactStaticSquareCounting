@@ -3,9 +3,19 @@
 #define GRAPH_H
 
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <map>
 #include "types.h"
+
+struct hashFunction
+{
+  uint64_t operator()(const std::pair<VertexID, VertexID> &x) const
+  {
+    return (((uint64_t) x.first) << 32) | x.second;
+  }
+};
+
 
 class Graph{
 
@@ -40,7 +50,9 @@ public:
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map_comm;
 
+    //For Interface Graph
     std::vector<std::pair<VertexID, VertexID>> interface_edges;
+    std::unordered_set<std::pair<VertexID, VertexID>, hashFunction> other_ptn_edges;
 
     Graph(){
         
@@ -66,6 +78,7 @@ public:
     void loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);

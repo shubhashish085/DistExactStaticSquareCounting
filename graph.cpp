@@ -1118,6 +1118,237 @@ void Graph::loadPartitionedInterfaceGraphFromFile(const std::string& file_path, 
 }
 
 
+void Graph::loadPartitionedInterfaceGraphOptimized(const std::string& file_path, const std::string& vtx_ptn_file_path, int partition_no){
+
+    NodeID partition_id;
+    VertexID vertex_id;
+    bool contains_in_partition = false;
+
+    std::ifstream vertex_partition_file(vtx_ptn_file_path);
+    std::ifstream infile(file_path);
+
+    if (!vertex_partition_file.is_open() || !infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << vtx_ptn_file_path << " or " << file_path << "." << std::endl;
+        exit(-1);
+    }
+
+    ui total_vertices_count = 0;
+
+    while (vertex_partition_file >> vertex_id){
+
+        vertex_partition_file >> partition_id;
+        total_vertices_count++;
+    }
+
+    vertex_partition_file.close();
+
+    std::ifstream vtx_ptn_file(vtx_ptn_file_path);
+
+    partition = new NodeID[total_vertices_count];
+
+    while (vtx_ptn_file >> vertex_id)
+    {
+        vtx_ptn_file >> partition_id;
+        partition[vertex_id] = partition_id;
+    }
+
+    vtx_ptn_file.close();
+
+    ui line_count = 0, comment_line_count = 4;
+    VertexID begin, end;
+    std::string input_line;
+
+    while (std::getline(infile, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    vertices_count = 0;
+    vertex_idx_map.clear();
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if((partition[begin] != partition[end]) && ((partition[begin] == partition_no) || (partition[end] == partition_no))){
+                
+                if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
+                    vertex_idx_map[begin] = vertices_count;
+                    vertices_count++;
+                }
+
+                if(vertex_idx_map.find(end) == vertex_idx_map.end()){
+                    vertex_idx_map[end] = vertices_count;
+                    vertices_count++;
+                }                
+            }
+        }
+    }
+
+    infile.close();
+
+    std::ifstream input_file(file_path);
+
+    degrees = new ui[vertices_count];
+    local_partition = new NodeID[vertices_count];
+    offsets = new ui[vertices_count + 1];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    ui  offset;
+    line_count = 0, comment_line_count = 4;
+
+    while (std::getline(input_file, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    edges_count = 0;
+
+    VertexID begin_idx, end_idx;
+
+    while (input_file >> begin){
+
+        input_file >> end;
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if((vertex_idx_map.find(begin) != vertex_idx_map.end()) && (vertex_idx_map.find(end) != vertex_idx_map.end())){
+                if((partition_no > partition[begin]) && (partition[begin] == partition[end])){
+                    continue;
+                }
+
+                if((partition[begin] != partition[end]) && ((partition[begin] == partition_no) || (partition[end] == partition_no))){
+                    if(partition[begin] != partition_no){
+
+                        begin_idx = vertex_idx_map[begin];
+                        end_idx = vertex_idx_map[end]; 
+                        degrees[end_idx] += 1;
+                        local_partition[begin_idx] = partition[begin];
+                        local_partition[end_idx] = partition[end];
+
+                    }else if (partition[end] != partition_no){
+
+                        begin_idx = vertex_idx_map[begin];
+                        end_idx = vertex_idx_map[end]; 
+                        degrees[begin_idx] += 1;
+                        local_partition[begin_idx] = partition[begin];
+                        local_partition[end_idx] = partition[end];
+                    }
+
+                    edges_count++;
+
+                } else if ((partition[begin] != partition[end]) && ((partition[begin] != partition_no) && (partition[end] != partition_no))) {
+
+                    begin_idx = vertex_idx_map[begin];
+                    end_idx = vertex_idx_map[end]; 
+                    local_partition[begin_idx] = partition[begin];
+                    local_partition[end_idx] = partition[end];
+                    other_ptn_edges.insert(std::make_pair(std::min(begin_idx, end_idx), std::max(begin_idx, end_idx)));
+
+                } else if ((partition_no != partition[begin]) && (partition[begin] == partition[end])) {
+
+                    begin_idx = vertex_idx_map[begin];
+                    end_idx = vertex_idx_map[end]; 
+                    local_partition[begin_idx] = partition[begin];
+                    local_partition[end_idx] = partition[end];
+                    other_ptn_edges.insert(std::make_pair(std::min(begin_idx, end_idx), std::max(begin_idx, end_idx)));
+
+                } else if((partition_no == partition[begin]) && (partition[begin] == partition[end])){
+                    
+                    begin_idx = vertex_idx_map[begin];
+                    end_idx = vertex_idx_map[end];
+                    local_partition[begin_idx] = partition[begin];
+                    local_partition[end_idx] = partition[end]; 
+                    interface_edges.push_back(std::make_pair(begin_idx, end_idx));
+                }
+            }
+        }
+    }
+
+    //std::cout << "Partition - " << partition_no << " Edge Count : " << edges_count << std::endl; 
+
+    input_file.close();
+
+    offsets[0] = 0;
+    neighbors = new VertexID[edges_count * 2];
+
+    for (VertexID i = 0; i < vertices_count; i++){
+        offsets[i + 1] = offsets[i] + degrees[i];
+    }
+
+    std::ifstream in_file(file_path);
+
+    line_count = 0, comment_line_count = 4;
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+
+    while (std::getline(in_file, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }    
+
+    while (in_file >> begin){
+
+        in_file >> end;
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if((vertex_idx_map.find(begin) != vertex_idx_map.end()) && (vertex_idx_map.find(end) != vertex_idx_map.end())){
+
+                if((partition_no > partition[begin]) && (partition[begin] == partition[end])){
+                    continue;
+                }
+
+                if((partition[begin] != partition[end]) && ((partition[begin] == partition_no) || (partition[end] == partition_no))){
+
+                    begin_idx = vertex_idx_map[begin];
+                    end_idx = vertex_idx_map[end]; 
+
+                    if(partition[begin] != partition_no){
+
+                        offset = offsets[end_idx] + neighbors_offset[end_idx];
+                        neighbors[offset] = begin_idx;
+                        neighbors_offset[end_idx] += 1;
+
+                    }else if (partition[end] != partition_no){
+
+                        offset = offsets[begin_idx] + neighbors_offset[begin_idx];
+                        neighbors[offset] = end_idx;
+                        neighbors_offset[begin_idx] += 1;
+                    }
+                }                
+            }
+        }    
+    }
+
+    in_file.close();
+    
+    for (ui i = 0; i < vertices_count; ++i){
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
+    }    
+}
+
+
+
+
 void Graph::loadPartitionedInterfaceGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file_path, int partition_no){
 
     NodeID partition_id;
