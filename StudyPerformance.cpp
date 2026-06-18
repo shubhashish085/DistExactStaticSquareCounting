@@ -82,7 +82,7 @@
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -100,11 +100,11 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 
 //Undirected graph Multiple Partitions
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -118,10 +118,11 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    DistributedCountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
+    //DistributedCountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
+    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
-}*/
+}
 
 //Bidirectional Edges
 /*int main(int argc, char** argv){
