@@ -80,6 +80,7 @@ public:
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphBidirectionOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file);
