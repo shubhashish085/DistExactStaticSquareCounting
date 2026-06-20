@@ -104,7 +104,7 @@
 
 
 //Undirected graph Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -122,7 +122,7 @@ int main(int argc, char** argv){
     DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
-}
+}*/
 
 //Bidirectional Edges
 /*int main(int argc, char** argv){
@@ -204,4 +204,29 @@ int main(int argc, char** argv){
 
     MPI_Finalize();
 }*/
+
+//Communication Analysis
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    Graph* graph = new Graph();
+    graph->loadGraphAndPartitionFromFile(input_data_graph_file, vertex_partition_file, partition_cnt);
+    Graph* augmented_graph = new Graph();
+    graph->transformToAugmentedGraph(augmented_graph);
+
+    long long communication_cost = Analysis::communication_analysis_directed_graph(augmented_graph);
+    std::cout << "Total Communication Cost : " << communication_cost << std::endl;
+    std::cout << "=============================================================" << std::endl;    
+    
+}
 

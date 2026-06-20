@@ -104,3 +104,117 @@ void Analysis::analyse_optimized_db_count_square_in_whole_ptn_graph_seq(const st
 
     print_detailed_statistics(cut_graph, -1, time_array, cut_graph_square_count);    
 }
+
+
+long long Analysis::communication_analysis_directed_graph(Graph* graph){
+
+    std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+    VertexID *nbrs_p, *nbrs_q;
+    ui nbrs_cnt_p = 0, nbrs_cnt_q = 0;
+
+
+    long long comm_size = 0, comm_1 = 0, comm_2 = 0;
+
+    for (VertexID p = 0; p < graph->vertices_count; p++){
+        nbrs_p = graph->getVertexNeighbors(p, nbrs_cnt_p);
+
+        for (ui j = 0; j < nbrs_cnt_p; j++){
+            for(ui k = j + 1; k < nbrs_cnt_p; k++){
+                
+                search_pair = std::make_pair( std::min(nbrs_p[j], nbrs_p[k]) , std::max(nbrs_p[j], nbrs_p[k]));
+                
+                auto search_result = wedge_map.find(search_pair);
+                if (search_result == wedge_map.end()){
+                    wedge_map[search_pair] = 1;
+                }
+            }
+        }
+    }
+
+    comm_size += (wedge_map.size() * 3);
+
+    NodeID partition_p, partition_q, partition_r;
+    ui nbr_cnt_other_ptn_p = 0, nbr_cnt_other_ptn_q = 0;
+    VertexID p, q, r, s;
+
+    // communication -> pqrs
+
+    for (VertexID p = 0; p < graph->vertices_count; p++){
+        
+        partition_p = graph->partition[p];
+        nbrs_p = graph->getVertexNeighbors(p, nbrs_cnt_p);
+        nbr_cnt_other_ptn_p = 0;
+
+        for(ui j = 0; j < nbrs_cnt_p; j++){
+
+            q = nbrs_p[j];
+            partition_q = graph->partition[q];
+
+            if(partition_p != partition_q){
+                nbr_cnt_other_ptn_p += 1;
+            }            
+
+            nbrs_q = graph->getVertexNeighbors(q, nbrs_cnt_q);
+            nbr_cnt_other_ptn_q = 0;
+
+            for(ui k = 0; k < nbrs_cnt_q; k++){
+                r = nbrs_q[k];
+                partition_r = graph->partition[r];
+
+                if(partition_r != partition_q){
+                    nbr_cnt_other_ptn_q += 1;
+                }                
+            }
+
+            comm_1 += (nbr_cnt_other_ptn_q * nbrs_cnt_p);
+        }
+
+        comm_1 += (nbr_cnt_other_ptn_p * nbrs_cnt_p);
+    }
+
+    comm_size += comm_1;
+
+    // communication -> pqsr
+
+    for (VertexID p = 0; p < graph->vertices_count; p++)
+    {
+        partition_p = graph->partition[p];
+        nbrs_p = graph->getVertexNeighbors(p, nbrs_cnt_p);
+        nbr_cnt_other_ptn_p = 0;
+
+        for (VertexID j = 0; j < nbrs_cnt_p; j++)
+        {
+            q = nbrs_p[j];
+            partition_q = graph->partition[q];
+            nbrs_q = graph->getVertexNeighbors(q, nbrs_cnt_q);
+
+            if(partition_p != partition_q){
+                nbr_cnt_other_ptn_p += 1;
+            }
+
+            nbr_cnt_other_ptn_q = 0;
+            for (VertexID k = 0; k < nbrs_cnt_p; k++){
+                r = nbrs_p[k];
+
+                if(!(graph->is_smaller(q, r))){
+                    continue;
+                }
+
+                nbr_cnt_other_ptn_q += 1;                
+            }
+
+            comm_2 += (nbr_cnt_other_ptn_q * nbrs_cnt_q);
+        }
+
+        comm_2 += (nbr_cnt_other_ptn_p * nbrs_cnt_p);
+    }
+
+    comm_size += comm_2;
+
+    std::cout << "Wedge Map Communication Size : " << wedge_map.size() << std::endl;
+    std::cout << "PQRS Communication Volume : " << comm_1 << std::endl;
+    std::cout << "PQSR Communication Volume : " << comm_2 << std::endl;
+
+    return comm_size;
+}

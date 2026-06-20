@@ -14,6 +14,8 @@ public:
 
     //static void opt_wb_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
 
+    static long long communication_analysis_directed_graph(Graph* graph);
+
     static void analyse_optimized_db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     //static void analyse_optimized_db_count_square_in_bidirectional_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
