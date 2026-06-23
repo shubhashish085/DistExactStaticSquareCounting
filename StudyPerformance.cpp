@@ -220,7 +220,8 @@ int main(int argc, char** argv){
     std::cout << "Partition Count : " << partition_count << std::endl;
 
     Graph* graph = new Graph();
-    graph->loadGraphAndPartitionFromFile(input_data_graph_file, vertex_partition_file, partition_cnt);
+    //graph->loadGraphAndPartitionFromFile(input_data_graph_file, vertex_partition_file, partition_cnt);
+    graph->loadBidirectionalGraphAndPartitionFromFile(input_data_graph_file, vertex_partition_file, partition_cnt);
     Graph* augmented_graph = new Graph();
     graph->transformToAugmentedGraph(augmented_graph);
 

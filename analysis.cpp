@@ -134,6 +134,8 @@ long long Analysis::communication_analysis_directed_graph(Graph* graph){
 
     comm_size += (wedge_map.size() * 3);
 
+    //std::cout << "First Step Done " << std::endl;
+
     NodeID partition_p, partition_q, partition_r;
     ui nbr_cnt_other_ptn_p = 0, nbr_cnt_other_ptn_q = 0;
     VertexID p, q, r, s;
@@ -175,6 +177,8 @@ long long Analysis::communication_analysis_directed_graph(Graph* graph){
 
     comm_size += comm_1;
 
+    //std::cout << "Second Step Done " << std::endl;
+
     // communication -> pqsr
 
     for (VertexID p = 0; p < graph->vertices_count; p++)
@@ -211,6 +215,8 @@ long long Analysis::communication_analysis_directed_graph(Graph* graph){
     }
 
     comm_size += comm_2;
+
+    //std::cout << "Third Step Done " << std::endl;
 
     std::cout << "Wedge Map Communication Size : " << wedge_map.size() << std::endl;
     std::cout << "PQRS Communication Volume : " << comm_1 << std::endl;
