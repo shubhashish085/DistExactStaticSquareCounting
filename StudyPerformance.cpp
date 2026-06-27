@@ -19,14 +19,14 @@
 #include "distributedcountingalgo.h"
 
 // Sequential Square Count
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
     clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
-    //graph->loadGraphFromFile(input_data_graph_file);
-    graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    graph->loadGraphFromFile(input_data_graph_file);
+    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
     double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
 
 
@@ -50,7 +50,7 @@
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}*/
+}
 
 
 // Wedge Based Square Count
@@ -206,7 +206,7 @@
 }*/
 
 //Communication Analysis
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -229,5 +229,56 @@ int main(int argc, char** argv){
     std::cout << "Total Communication Cost : " << communication_cost << std::endl;
     std::cout << "=============================================================" << std::endl;    
     
-}
+}*/
+
+// Replication Factor
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    //Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
+}*/
+
+
+// Replication Factor For Bidirectional Edges
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    //Analysis::analyse_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    Analysis::analyse_edge_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
+}*/
+
+
+//Graph Metadata
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+
+    Graph* graph = new Graph();
+    //graph->loadGraphMetaDataFromFile(input_data_graph_file);
+    graph->loadGraphMetaDataFromFileForBothDirectionEdges(input_data_graph_file);
+}*/
 
