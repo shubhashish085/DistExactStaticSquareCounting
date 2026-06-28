@@ -62,12 +62,14 @@ int main(int argc, char** argv){
     Graph* graph = new Graph();
     graph->loadOrderedGraphFromFile(input_data_graph_file);
     //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
-    double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
+    double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;
+
+    std::cout << "Loading Finished.........." << std::endl;    
 
 
     clock_t transformation_begin_clock = clock();
     Graph* augmented_graph = new Graph();
-    graph->transformToAugmentedGraph(augmented_graph);
+    graph->transformToAugmentedGraphWoPartition(augmented_graph);
     double transformation_time = (double(clock() - transformation_begin_clock)) / CLOCKS_PER_SEC;    
 
     clock_t counting_begin_clock = clock();

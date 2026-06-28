@@ -2831,6 +2831,54 @@ void Graph::transformToAugmentedGraph(Graph* augmented_graph){
     }   
 }
 
+void Graph::transformToAugmentedGraphWoPartition(Graph* augmented_graph){
+
+    augmented_graph->vertices_count = vertices_count;
+    augmented_graph->edges_count = edges_count;
+    augmented_graph->offsets = new ui[vertices_count + 1];
+    augmented_graph->neighbors = new VertexID[edges_count];
+
+    augmented_graph->offsets[0] = 0;
+
+    augmented_graph->main_degrees = new ui[augmented_graph->vertices_count];
+    augmented_graph->degrees = new ui[augmented_graph->vertices_count];
+    std::fill(augmented_graph->degrees, augmented_graph->degrees + augmented_graph->vertices_count, 0);
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+            if ((degrees[neighbors[j]] > degrees[i]) || ((degrees[neighbors[j]] == degrees[i]) && neighbors[j] > i))
+            {
+                augmented_graph->degrees[i] += 1;
+            }
+        }
+    }
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        augmented_graph->offsets[i + 1] = augmented_graph->offsets[i] + augmented_graph->degrees[i];
+        augmented_graph->main_degrees[i] = degrees[i];
+    }
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+    ui offset;
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++){
+
+            if ((degrees[neighbors[j]] > degrees[i]) || ((degrees[neighbors[j]] == degrees[i]) && neighbors[j] > i)){
+
+                offset = augmented_graph->offsets[i] + neighbors_offset[i];
+                augmented_graph->neighbors[offset] = neighbors[j];
+                neighbors_offset[i] += 1;
+            }
+        }
+    }   
+}
+
+
 
 long long Graph::get_wedge_cnt_by_two_vertices(VertexID v1, VertexID v2){
 

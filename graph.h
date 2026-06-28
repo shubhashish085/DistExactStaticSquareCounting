@@ -94,6 +94,7 @@ public:
     bool is_smaller(VertexID u, VertexID v);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
+    void transformToAugmentedGraphWoPartition(Graph* augmented_graph);
     void buildPartitionWiseNbrCntArray (int partition_count, int partition_no){
         ptn_wise_nbr_cnt = new ui[partition_count];
         std::fill(ptn_wise_nbr_cnt, ptn_wise_nbr_cnt + partition_count, 0);
