@@ -75,6 +75,7 @@ public:
     void loadOrderedGraphFromFile(const std::string& file_path);
     void loadGraphMetaDataFromFile(const std::string& file_path);
     void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
+    void loadOrderedGraphFromFileForBothDirectionEdges(const std::string& file_path);
     void loadGraphMetaDataFromFileForBothDirectionEdges(const std::string& file_path);
     void loadGraphAndPartitionFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadBidirectionalGraphAndPartitionFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);

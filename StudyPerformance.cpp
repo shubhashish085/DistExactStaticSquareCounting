@@ -60,8 +60,8 @@ int main(int argc, char** argv){
 
     clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
-    graph->loadOrderedGraphFromFile(input_data_graph_file);
-    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    //graph->loadOrderedGraphFromFile(input_data_graph_file);
+    graph->loadOrderedGraphFromFileForBothDirectionEdges(input_data_graph_file);
     double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;
 
     std::cout << "Loading Finished.........." << std::endl;    
