@@ -72,6 +72,7 @@ public:
 
 public:
     void loadGraphFromFile(const std::string& file_path);
+    void loadOrderedGraphFromFile(const std::string& file_path);
     void loadGraphMetaDataFromFile(const std::string& file_path);
     void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
     void loadGraphMetaDataFromFileForBothDirectionEdges(const std::string& file_path);

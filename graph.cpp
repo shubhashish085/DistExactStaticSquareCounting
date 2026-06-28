@@ -161,6 +161,100 @@ void Graph::loadGraphFromFile(const std::string &file_path)
     }
 }
 
+
+void Graph::loadOrderedGraphFromFile(const std::string &file_path){
+
+    std::ifstream infile(file_path);
+
+    if (!infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << file_path << " ." << std::endl;
+        exit(-1);
+    }
+
+    std::string input_line;
+    ui count = 0;
+
+    VertexID begin, end, vertex_limit = 0;
+
+    edges_count = 0;
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if(begin > vertex_limit){
+            vertex_limit = begin;
+        }
+
+        if(end > vertex_limit){
+            vertex_limit = end;
+        }
+
+        edges_count++;
+    }
+
+    vertices_count = vertex_limit + 1;
+
+    infile.close();
+
+    degrees = new ui[vertices_count];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    std::ifstream in_file(file_path);
+
+    if(!in_file.is_open()){
+
+        std::cout << "Can not open the graph file " << file_path << " ." << std::endl;
+        exit(-1);
+    }
+
+    while (in_file >> begin){
+        in_file >> end;
+
+        degrees[begin] += 1;
+        degrees[end] += 1;
+    }
+
+    in_file.close();
+
+
+    std::ifstream input_file(file_path);
+
+    offsets = new ui[vertices_count + 1];
+    offsets[0] = 0;
+
+    neighbors = new VertexID[edges_count * 2];
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+
+    for (ui id = 0; id < vertices_count; id++){
+        offsets[id + 1] = offsets[id] + degrees[id];
+    }
+
+    ui offset;
+    
+    while (input_file >> begin)
+    {
+        input_file >> end;
+
+        offset = offsets[begin] + neighbors_offset[begin];
+        neighbors[offset] = end;
+
+        offset = offsets[end] + neighbors_offset[end];
+        neighbors[offset] = begin;
+
+        neighbors_offset[begin] += 1;
+        neighbors_offset[end] += 1;
+    }
+
+    input_file.close();
+
+    for (ui i = 0; i < vertices_count; ++i){
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
+    }
+}
+
+
 void Graph::loadGraphMetaDataFromFile(const std::string &file_path)
 {
     std::ifstream infile(file_path);
