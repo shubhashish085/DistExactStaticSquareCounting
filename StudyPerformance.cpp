@@ -329,6 +329,7 @@ int main(int argc, char** argv){
     
     std::cout << "=============================================================" << std::endl; 
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Output Graph File : " << output_data_graph_file << std::endl;
 
     Graph* graph = new Graph();
     graph->loadGraphFromFile(input_data_graph_file);
