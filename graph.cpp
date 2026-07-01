@@ -656,6 +656,9 @@ void Graph::loadOrderedGraphFromFileForBothDirectionEdges(const std::string &fil
 
     vertices_count = vertex_limit + 1;
 
+    degrees = new ui[vertices_count];
+    std::fill(degrees, degrees + vertices_count, 0);
+
     infile.close();
 
     std::ifstream in_file(file_path);
@@ -1178,6 +1181,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string &file_
     }
 
     edges_count = 0;
+    cut_edges_count = 0;
     ghost_vertices_count = 0;
 
     while (infile >> begin){
@@ -1416,6 +1420,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string &fi
     }
 
     edges_count = 0;
+    cut_edges_count = 0;
     ghost_vertices_count = 0;
 
     while (infile >> begin){

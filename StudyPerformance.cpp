@@ -54,7 +54,7 @@
 
 
 // Sequential Square Count in Vertex Ordered Graph
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -89,7 +89,7 @@ int main(int argc, char** argv){
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}
+}*/
 
 
 // Wedge Based Square Count
@@ -271,7 +271,7 @@ int main(int argc, char** argv){
 }*/
 
 // Replication Factor
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -286,7 +286,7 @@ int main(int argc, char** argv){
 
     //Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
     Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
-}*/
+}
 
 
 // Replication Factor For Bidirectional Edges
