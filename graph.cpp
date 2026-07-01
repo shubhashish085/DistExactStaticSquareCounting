@@ -64,7 +64,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
                         }
                         else
                         {
-                            edges_count = stoi(token);
+                            //edges_count = stoi(token);
                             count = 0;
                         }
                         //std::cout << "Vertices Count : " << vertices_count << " Edges Count : " << edges_count << std::endl;
@@ -79,8 +79,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
         }
     }
 
-    // Hard-coded vertices
-    //vertices_count = 334863;
+    edges_count = 0;
 
     VertexID begin, end;
 
@@ -93,6 +92,7 @@ void Graph::loadGraphFromFile(const std::string &file_path)
         {
             degrees[begin] += 1;
             degrees[end] += 1;
+            edges_count++;
         }
     }
 
@@ -2967,6 +2967,30 @@ void Graph::transformToAugmentedGraphWoPartition(Graph* augmented_graph){
             }
         }
     }   
+}
+
+
+void Graph::convertGraphToMETISFormat(const std::string& output_file_path){
+
+    std::ofstream out(output_file_path);
+
+    out << vertices_count << " " << edges_count << std::endl;
+
+    for (VertexID u = 0; u < vertices_count; u++) {
+
+        for (VertexID i = offsets[u]; i < offsets[u + 1]; i++) {
+
+            out << neighbors[i] + 1;
+
+            if (i + 1 != offsets[u + 1]){
+                out << " ";
+            }                
+        }
+
+        out << std::endl;
+    }
+
+    out.close();
 }
 
 

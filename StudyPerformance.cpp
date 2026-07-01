@@ -271,7 +271,7 @@
 }*/
 
 // Replication Factor
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -286,7 +286,7 @@ int main(int argc, char** argv){
 
     //Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
     Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
-}
+}*/
 
 
 // Replication Factor For Bidirectional Edges
@@ -321,3 +321,18 @@ int main(int argc, char** argv){
     graph->loadGraphMetaDataFromFileForBothDirectionEdges(input_data_graph_file);
 }*/
 
+//METIS File Format
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string output_data_graph_file = argv[2];
+    
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+
+    Graph* graph = new Graph();
+    graph->loadGraphFromFile(input_data_graph_file);
+
+    graph->convertGraphToMETISFormat(output_data_graph_file);
+    std::cout << "=============================================================" << std::endl; 
+}

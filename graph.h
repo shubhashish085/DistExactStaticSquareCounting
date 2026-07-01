@@ -90,6 +90,7 @@ public:
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file);
+    void convertGraphToMETISFormat(const std::string& output_file_path);
     void printGraphMetaData();
 
     bool is_smaller(VertexID u, VertexID v);
