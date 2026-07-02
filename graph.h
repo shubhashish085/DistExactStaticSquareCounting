@@ -77,9 +77,9 @@ public:
     void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
     void loadOrderedGraphFromFileForBothDirectionEdges(const std::string& file_path);
     void loadGraphMetaDataFromFileForBothDirectionEdges(const std::string& file_path);
+
     void loadGraphAndPartitionFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadBidirectionalGraphAndPartitionFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
-    //void loadPartitionedGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
@@ -89,7 +89,22 @@ public:
     void loadPartitionedInterfaceGraphBidirectionOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
-    void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file);
+    void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file_path);
+
+
+    void loadGraphAndPartitionFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadBidirectionalGraphAndPartitionFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphWoCutEdgesFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphOptimizedKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphBidirectionOptimizedKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadCutGraphFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file);
+    void loadCutGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file);
+
+
     void convertGraphToMETISFormat(const std::string& output_file_path);
     void printGraphMetaData();
 

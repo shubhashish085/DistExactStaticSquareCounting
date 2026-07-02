@@ -25,6 +25,7 @@ public:
     static void optimized_db_count_square_in_bidirectional_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
     static void db_count_square_with_interface_graph_optimization(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void db_count_square_with_interface_graph_optimization_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
     static long long db_count_square_in_cut_graph(Graph* graph);
     static long long db_count_square_in_local_graph(Graph* graph);
