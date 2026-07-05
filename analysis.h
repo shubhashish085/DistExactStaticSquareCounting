@@ -21,6 +21,10 @@ public:
     static void analyse_replication_factor(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void analyse_edge_replication_factor(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
+    static void analyse_replication_factor_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void analyse_edge_replication_factor_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+
+
     static void analyse_replication_factor_for_bidirectional_edges(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void analyse_edge_replication_factor_for_bidirectional_edges(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
