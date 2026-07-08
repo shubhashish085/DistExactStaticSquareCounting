@@ -28,6 +28,9 @@ public:
     static void analyse_replication_factor_for_bidirectional_edges(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void analyse_edge_replication_factor_for_bidirectional_edges(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
+    static void analyse_replication_factor_for_bidirectional_edges_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void analyse_edge_replication_factor_for_bidirectional_edges_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+
 
     static void print_detailed_statistics(Graph* graph, int ptn_idx, double* time_array, long long square_count);
 

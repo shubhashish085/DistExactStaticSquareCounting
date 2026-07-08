@@ -1183,6 +1183,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string &file_
     edges_count = 0;
     cut_edges_count = 0;
     ghost_vertices_count = 0;
+    vertices_count = 0;
 
     while (infile >> begin){
 
@@ -1260,6 +1261,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string &file_
     }
 
     VertexID begin_idx, end_idx;
+    other_ptn_edges_count = 0;
 
     while (input_file >> begin)
     {
@@ -1283,6 +1285,8 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string &file_
                 end_idx = vertex_idx_map[end];
                 ghost_degrees[begin_idx] += 1;
                 local_partition[end_idx] = partition[end];
+            }else if(other_ptn_vertex_idx_map.find(begin) != other_ptn_vertex_idx_map.end() && other_ptn_vertex_idx_map.find(end) != other_ptn_vertex_idx_map.end()){
+                other_ptn_edges_count++;
             }
         }
     }
@@ -1499,6 +1503,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string &fi
     }
 
     VertexID begin_idx, end_idx;
+    other_ptn_edges_count = 0;
 
     while (input_file >> begin)
     {
@@ -1516,6 +1521,8 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string &fi
                 ghost_degrees[begin_idx] += 1;
                 local_partition[begin_idx] = partition[begin]; 
                 local_partition[end_idx] = partition[end];
+            }else if((begin < end) && other_ptn_vertex_idx_map.find(begin) != other_ptn_vertex_idx_map.end() && other_ptn_vertex_idx_map.find(end) != other_ptn_vertex_idx_map.end()){
+                other_ptn_edges_count++;
             }
         }
     }
@@ -2529,8 +2536,6 @@ void Graph::loadCutGraphFromFile(const std::string& file_path, const std::string
     std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
     VertexID begin_idx, end_idx;
 
-    std::vector<VertexID> vec = {538, 156632, 240108, 240110};
-
     while (input_file >> begin){
 
         input_file >> end;      
@@ -2994,6 +2999,30 @@ void Graph::convertGraphToMETISFormat(const std::string& output_file_path){
 }
 
 
+void Graph::convertGraphToMETISFormatBidirectionalEdges(const std::string& output_file_path){
+
+    std::ofstream out(output_file_path);
+
+    out << vertices_count << " " << (edges_count / 2) << std::endl;
+
+    for (VertexID u = 0; u < vertices_count; u++) {
+
+        for (VertexID i = offsets[u]; i < offsets[u + 1]; i++) {
+
+            out << neighbors[i] + 1;
+
+            if (i + 1 != offsets[u + 1]){
+                out << " ";
+            }                
+        }
+
+        out << std::endl;
+    }
+
+    out.close();
+}
+
+
 
 long long Graph::get_wedge_cnt_by_two_vertices(VertexID v1, VertexID v2){
 
@@ -3402,12 +3431,12 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFileKahip(const std::string &
     ui total_vertices_count = 0;
 
     while (vertex_partition_file >> partition_id){
-        vertices_count++;
+        total_vertices_count++;
     }
 
     vertex_partition_file.close();
 
-    partition = new NodeID[vertices_count];
+    partition = new NodeID[total_vertices_count];
 
     vertex_id = 0;
     while (vtx_ptn_file >> partition_id){
@@ -3435,6 +3464,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFileKahip(const std::string &
     edges_count = 0;
     cut_edges_count = 0;
     ghost_vertices_count = 0;
+    vertices_count = 0;
 
     while (infile >> begin){
 
@@ -3512,6 +3542,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFileKahip(const std::string &
     }
 
     VertexID begin_idx, end_idx;
+    other_ptn_edges_count = 0;
 
     while (input_file >> begin)
     {
@@ -3535,6 +3566,8 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesFromFileKahip(const std::string &
                 end_idx = vertex_idx_map[end];
                 ghost_degrees[begin_idx] += 1;
                 local_partition[end_idx] = partition[end];
+            }else if(other_ptn_vertex_idx_map.find(begin) != other_ptn_vertex_idx_map.end() && other_ptn_vertex_idx_map.find(end) != other_ptn_vertex_idx_map.end()){
+                other_ptn_edges_count++;
             }
         }
     }
@@ -3640,12 +3673,12 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(const std::strin
     ui total_vertices_count = 0;
 
     while (vertex_partition_file >> partition_id){
-        vertices_count++;
+        total_vertices_count++;
     }
 
     vertex_partition_file.close();
 
-    partition = new NodeID[vertices_count];
+    partition = new NodeID[total_vertices_count];
 
     vertex_id = 0;
     while (vtx_ptn_file >> partition_id){
@@ -3671,6 +3704,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(const std::strin
 
     edges_count = 0;
     cut_edges_count = 0;
+    vertices_count = 0;
     ghost_vertices_count = 0;
 
     while (infile >> begin){
@@ -3749,6 +3783,7 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(const std::strin
     }
 
     VertexID begin_idx, end_idx;
+    other_ptn_edges_count = 0;
 
     while (input_file >> begin)
     {
@@ -3766,6 +3801,8 @@ void Graph::loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(const std::strin
                 ghost_degrees[begin_idx] += 1;
                 local_partition[begin_idx] = partition[begin]; 
                 local_partition[end_idx] = partition[end];
+            }else if((begin < end) && other_ptn_vertex_idx_map.find(begin) != other_ptn_vertex_idx_map.end() && other_ptn_vertex_idx_map.find(end) != other_ptn_vertex_idx_map.end()){
+                other_ptn_edges_count++;
             }
         }
     }
@@ -4053,8 +4090,7 @@ void Graph::loadPartitionedInterfaceGraphOptimizedKahip(const std::string& file_
     partition = new NodeID[total_vertices_count];
 
     vertex_id = 0;
-    while (vtx_ptn_file >> partition_id)
-    {
+    while (vtx_ptn_file >> partition_id){
         partition[vertex_id] = partition_id;
         vertex_id++;
     }
@@ -4183,8 +4219,6 @@ void Graph::loadPartitionedInterfaceGraphOptimizedKahip(const std::string& file_
             }
         }
     }
-
-    //std::cout << "Partition - " << partition_no << " Edge Count : " << edges_count << std::endl; 
 
     input_file.close();
 
@@ -4684,7 +4718,6 @@ void Graph::loadCutGraphFromFileKahip(const std::string& file_path, const std::s
     ui total_vertices_count = 0;
 
     while (vertex_partition_file >> partition_id){
-
         total_vertices_count++;
     }
 
@@ -4695,8 +4728,7 @@ void Graph::loadCutGraphFromFileKahip(const std::string& file_path, const std::s
     partition = new NodeID[total_vertices_count];
 
     vertex_id = 0;
-    while (vtx_ptn_file >> partition_id)
-    {
+    while (vtx_ptn_file >> partition_id){
         partition[vertex_id] = partition_id;
         vertex_id++;
     }
@@ -4849,9 +4881,7 @@ void Graph::loadCutGraphBidirectionKahip(const std::string& file_path, const std
 
     ui total_vertices_count = 0;
 
-    while (vertex_partition_file >> vertex_id){
-
-        vertex_partition_file >> partition_id;
+    while (vertex_partition_file >> partition_id){
         total_vertices_count++;
     }
 
@@ -4861,10 +4891,11 @@ void Graph::loadCutGraphBidirectionKahip(const std::string& file_path, const std
 
     partition = new NodeID[total_vertices_count];
 
-    while (vtx_ptn_file >> vertex_id)
-    {
-        vtx_ptn_file >> partition_id;
+
+    vertex_id = 0;
+    while (vtx_ptn_file >> partition_id){
         partition[vertex_id] = partition_id;
+        vertex_id++;
     }
 
     vtx_ptn_file.close();

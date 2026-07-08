@@ -553,15 +553,18 @@ void CountingAlgorithm::db_count_square_with_interface_graph_optimization(const 
 void CountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long global_square_count = 0, local_square_count = 0, local_cut_edge_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
-    long long deductible_count = 0, three_ptn_deductible_count = 0;
 
     for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
 
         Graph* local_graph = new Graph();
         local_graph->loadPartitionedLocalGraphWoCutEdgesFromFileKahip(file_path, vertex_partition_file_path, ptn_idx);
 
+        std::cout << "Local Loading Finished" << std::endl;
+
         Graph* interface_graph = new Graph();
-        interface_graph->loadPartitionedInterfaceGraphOptimizedKahip(file_path, vertex_partition_file_path, ptn_idx); 
+        interface_graph->loadPartitionedInterfaceGraphOptimizedKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        std::cout << "Interface Graph Loading Finished" << std::endl; 
 
         Graph* local_augmented_graph = new Graph();
         local_graph->transformToAugmentedGraph(local_augmented_graph);        

@@ -142,6 +142,28 @@
 }*/
 
 
+//Sequential Direction Based Square Count for Multiple Partitions - KaHIP
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "==================================================" << std::endl;
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    CountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);     
+
+    std::cout << "==================================================" << std::endl;
+
+}*/
+
+
 //Undirected graph Multiple Partitions
 /*int main(int argc, char** argv){
 
@@ -162,6 +184,28 @@
 
     MPI_Finalize();
 }*/
+
+//Undirected graph Multiple Partitions - Kahip
+int main(int argc, char** argv){
+
+    MPI_Init(&argc, &argv);
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    MPI_Finalize();
+
+    std::cout << "######################################################################" << std::endl;
+}
 
 //Bidirectional Edges
 /*int main(int argc, char** argv){
@@ -199,6 +243,26 @@
     std::cout << "Partition Count : " << partition_count << std::endl;
 
     DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    MPI_Finalize();
+}*/
+
+//Bidirectional Edge - KaHIP 
+/*int main(int argc, char** argv){
+
+    MPI_Init(&argc, &argv);
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
 }*/
@@ -284,12 +348,12 @@
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
-    //Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    //Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
 }*/
 
 // Replication Factor - KaHIP
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -302,9 +366,9 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    Analysis::analyse_replication_factor_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
-    //Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
-}
+    //Analysis::analyse_replication_factor_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    Analysis::analyse_edge_replication_factor_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
+}*/
 
 
 // Replication Factor For Bidirectional Edges
@@ -323,6 +387,24 @@ int main(int argc, char** argv){
 
     //Analysis::analyse_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
     Analysis::analyse_edge_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
+}*/
+
+// Replication Factor For Bidirectional Edges - KaHIP
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    //Analysis::analyse_replication_factor_for_bidirectional_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
 }*/
 
 
@@ -352,5 +434,22 @@ int main(int argc, char** argv){
     Graph* graph = new Graph();
     graph->loadGraphFromFile(input_data_graph_file);
     graph->convertGraphToMETISFormat(output_data_graph_file);
+    std::cout << "=============================================================" << std::endl; 
+}*/
+
+
+//METIS File Format - Bidirectional Edges
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string output_data_graph_file = argv[2];
+    
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Output Graph File : " << output_data_graph_file << std::endl;
+
+    Graph* graph = new Graph();
+    graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    graph->convertGraphToMETISFormatBidirectionalEdges(output_data_graph_file);
     std::cout << "=============================================================" << std::endl; 
 }*/

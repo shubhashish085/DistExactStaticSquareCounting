@@ -28,6 +28,7 @@ public:
     ui vertices_count;
     ui edges_count;
     ui cut_edges_count;
+    ui other_ptn_edges_count;
     ui max_degree;
 
     ui* degrees;
@@ -59,6 +60,7 @@ public:
         vertices_count = 0;
         edges_count = 0;
         max_degree = 0;
+        other_ptn_edges_count = 0;
 
         offsets = NULL;
         neighbors = NULL;
@@ -106,6 +108,7 @@ public:
 
 
     void convertGraphToMETISFormat(const std::string& output_file_path);
+    void convertGraphToMETISFormatBidirectionalEdges(const std::string& output_file_path);
     void printGraphMetaData();
 
     bool is_smaller(VertexID u, VertexID v);
