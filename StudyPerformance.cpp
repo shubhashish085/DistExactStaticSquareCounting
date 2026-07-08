@@ -164,6 +164,63 @@
 }*/
 
 
+//Undirected graph Multiple Partitions - All Run
+int main(int argc, char** argv){
+
+    MPI_Init(&argc, &argv);
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+    int world_rank;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+    if(partition_cnt == 1 && world_rank == 0){
+
+        clock_t read_begin_clock = clock();
+        Graph* graph = new Graph();
+        graph->loadGraphFromFile(input_data_graph_file);
+        //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+        double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
+
+
+        clock_t transformation_begin_clock = clock();
+        Graph* augmented_graph = new Graph();
+        graph->transformToAugmentedGraphWoPartition(augmented_graph);
+        double transformation_time = (double(clock() - transformation_begin_clock)) / CLOCKS_PER_SEC;    
+
+        clock_t counting_begin_clock = clock();
+        long long exact_count = CountingAlgorithm::sequential_db_count_square(augmented_graph);
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+
+        double total_time = input_read_time + transformation_time + counting_time;    
+
+        std::cout << "=================Sequential==================" << std::endl;
+        std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+        std::cout << "Exact Square Count : " << exact_count << std::endl;    
+        std::cout << "Input File Reading Time : " << input_read_time << " seconds" << std::endl;
+        std::cout << "Transformation Time : " << transformation_time << " seconds" << std::endl;
+        std::cout << "Counting Time : " << counting_time << " seconds" << std::endl;
+        std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
+        std::cout << "==============================================" << std::endl;
+        
+    }else {
+
+        std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+        std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+        std::cout << "Partition Count : " << partition_count << std::endl;
+
+        DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
+    }
+
+    MPI_Finalize();
+}
+
+
+
 //Undirected graph Multiple Partitions
 /*int main(int argc, char** argv){
 
@@ -179,14 +236,13 @@
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    //DistributedCountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
     DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
 }*/
 
 //Undirected graph Multiple Partitions - Kahip
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -205,7 +261,7 @@ int main(int argc, char** argv){
     MPI_Finalize();
 
     std::cout << "######################################################################" << std::endl;
-}
+}*/
 
 //Bidirectional Edges
 /*int main(int argc, char** argv){
