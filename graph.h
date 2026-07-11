@@ -107,6 +107,12 @@ public:
     void loadCutGraphFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file);
 
+    void loadKroneckerLocalGraphWoCutEdgesBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadKroneckerLocalGraphWoCutEdgesBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadKroneckerInterfaceGraphBidirectionOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadKroneckerInterfaceGraphBidirectionOptimizedKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadKroneckerCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
+    void loadKroneckerCutGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file);
 
     void convertGraphToMETISFormat(const std::string& output_file_path);
     void convertGraphToMETISFormatBidirectionalEdges(const std::string& output_file_path);

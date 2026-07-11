@@ -142,6 +142,28 @@
 }*/
 
 
+//Sequential Direction Based Square Count for Multiple Partitions - Kronecker 
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    CountingAlgorithm::db_count_square_in_knkr(input_data_graph_file, vertex_partition_file, partition_cnt);     
+
+    std::cout << "==================================================" << std::endl;
+
+}
+
+
+
+
 //Sequential Direction Based Square Count for Multiple Partitions - KaHIP
 /*int main(int argc, char** argv){
 
@@ -158,6 +180,27 @@
     std::cout << "Partition Count : " << partition_count << std::endl;
 
     CountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);     
+
+    std::cout << "==================================================" << std::endl;
+
+}*/
+
+//Sequential Direction Based Square Count for Multiple Partitions - Kronecker - KaHIP
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "==================================================" << std::endl;
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    CountingAlgorithm::db_count_square_in_knkr_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);     
 
     std::cout << "==================================================" << std::endl;
 
@@ -455,7 +498,7 @@
 }*/
 
 //METIS File Format - Kronecker Graph
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string output_data_graph_file = argv[2];
@@ -468,7 +511,7 @@ int main(int argc, char** argv){
     graph->loadKroneckerGraphFromFile(input_data_graph_file);
     graph->convertGraphToMETISFormat(output_data_graph_file);
     std::cout << "=============================================================" << std::endl; 
-}
+}*/
 
 
 
