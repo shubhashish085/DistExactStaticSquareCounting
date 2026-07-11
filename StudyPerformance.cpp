@@ -466,7 +466,7 @@ int main(int argc, char** argv){
 
     Graph* graph = new Graph();
     graph->loadKroneckerGraphFromFile(input_data_graph_file);
-    graph->convertGraphToMETISFormatBidirectionalEdges(output_data_graph_file);
+    graph->convertGraphToMETISFormat(output_data_graph_file);
     std::cout << "=============================================================" << std::endl; 
 }
 
