@@ -5027,3 +5027,158 @@ void Graph::loadCutGraphBidirectionKahip(const std::string& file_path, const std
     }
 }
 
+
+void Graph::loadKroneckerGraphFromFile(const std::string& file_path){
+
+    std::cout << "############# Loading Kronecker Graph ###############" << std::endl;
+
+    std::ifstream infile(file_path);
+
+    std::map<VertexID, ui> degree_map;
+    std::map<VertexID, ui>::iterator itr;
+    VertexID max_vertex_id = 0;
+
+    if (!infile.is_open()) {
+        std::cout << "Can not open the graph file " << file_path << " ." << std::endl;
+        exit(-1);
+    }
+
+    char type;
+
+    std::cout << "Reading File............ " << std::endl;
+
+    ui edge_count = 0, count = 0;
+
+    VertexID begin, end;
+    ui label = 0;
+
+
+    while(infile >> begin >> end) {
+
+        if(begin == end){
+            continue;
+        }
+
+        edge_count++;
+
+        if(max_vertex_id < begin){
+            max_vertex_id = begin;
+        }
+
+        if(max_vertex_id < end){
+            max_vertex_id = end;
+        }
+
+    }
+
+    infile.close();
+
+    vertices_count = max_vertex_id + 1;
+    edges_count = edge_count / 2;
+
+    std::ifstream degree_infile(file_path);
+
+    degrees = new ui[vertices_count];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    while(degree_infile >> begin >> end) {
+
+        if(begin == end){
+            continue;
+        }
+
+        degrees[begin] += 1;
+    }
+
+    degree_infile.close();
+
+    
+    offsets = new ui[vertices_count +  1];
+    offsets[0] = 0;
+
+    neighbors = new VertexID[edge_count];
+
+    std::cout << "Vertices Count : " << vertices_count << " Edge Count : " << edges_count << std::endl;
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);// used for adjust neighbors with offset
+
+
+    for(ui id = 0; id < vertices_count; id++){
+        offsets[id + 1] = offsets[id] + degrees[id];
+    }
+
+
+    ui offset;
+
+    std::ifstream input_file(file_path);
+
+    while(input_file >> begin >> end){
+
+        if(begin == end && begin >= vertices_count && end >= vertices_count){
+            continue;
+        }        
+
+        offset = offsets[begin] + neighbors_offset[begin]; // adjusting the index of neighbor in neighbors array
+
+        //std::cout << "Offset : " << offset << " Begin : " << begin << " End : " << end << std::endl;
+        neighbors[offset] = end;
+        neighbors_offset[begin] += 1;
+    }
+
+    input_file.close();
+
+    for (ui i = 0; i < vertices_count; ++i) {
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]); // sorting the neighbors of every vertex
+    }
+}
+
+
+
+
+void Graph::isKroneckerGraphUndirected(const std::string& file_path){
+
+    VertexID begin, end;
+
+    bool isUndirected = true;
+    ui directed_edge_count = 0;
+
+    std::map<std::pair<VertexID, VertexID>, ui> edge_tracker;
+    std::map<std::pair<VertexID, VertexID>, ui>::iterator itr;
+    std::ifstream infile(file_path);
+
+    while (infile >> begin >> end)
+    {
+        if(begin == end){
+            continue;
+        }
+
+        itr = edge_tracker.find(std::make_pair(std::min(begin,end), std::max(begin, end)));
+
+        if(itr == edge_tracker.end()){
+
+            edge_tracker[std::make_pair(std::min(begin,end), std::max(begin, end))] = 1;
+
+        }else{
+            itr -> second = itr-> second + 1;
+        }
+
+    }
+
+    for (itr = edge_tracker.begin(); itr != edge_tracker.end(); ++itr){
+        if(itr-> second != 2){
+            isUndirected = false;
+            directed_edge_count += 1;
+        }
+    }
+
+    if(isUndirected){
+        std::cout << "The graph is undirected" << std::endl;
+    }else{
+        std::cout << "The graph is directed and directed edge count : " << directed_edge_count << std::endl;
+    }
+    
+
+    infile.close();
+}
+
+

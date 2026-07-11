@@ -74,6 +74,7 @@ public:
 
 public:
     void loadGraphFromFile(const std::string& file_path);
+    void loadKroneckerGraphFromFile(const std::string& file_path);
     void loadOrderedGraphFromFile(const std::string& file_path);
     void loadGraphMetaDataFromFile(const std::string& file_path);
     void loadGraphFromFileForBothDirectionEdges(const std::string& file_path);
@@ -112,6 +113,7 @@ public:
     void printGraphMetaData();
 
     bool is_smaller(VertexID u, VertexID v);
+    void isKroneckerGraphUndirected(const std::string& file_path);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartition(Graph* augmented_graph);
