@@ -117,6 +117,7 @@ public:
     void convertGraphToMETISFormat(const std::string& output_file_path);
     void convertGraphToMETISFormatBidirectionalEdges(const std::string& output_file_path);
     void printGraphMetaData();
+    void printEntireGraphData();
 
     bool is_smaller(VertexID u, VertexID v);
     void isKroneckerGraphUndirected(const std::string& file_path);

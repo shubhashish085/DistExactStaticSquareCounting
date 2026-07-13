@@ -520,13 +520,18 @@ void CountingAlgorithm::db_count_square_with_interface_graph_optimization(const 
         Graph* local_augmented_graph = new Graph();
         local_graph->transformToAugmentedGraph(local_augmented_graph);        
 
+        clock_t counting_begin_clock = clock();
         local_square_count = db_count_square_in_local_graph(local_augmented_graph);
         local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
         local_interface_square_count = db_count_square_in_interface_graph_optimized(interface_graph);
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
 
+        std::cout << "===================================================================================" << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Counting Time - " << counting_time << std::endl;
+        std::cout << "===================================================================================" << std::endl;
 
         global_square_count += local_square_count;
         global_square_count += local_cut_edge_square_count;
@@ -539,8 +544,12 @@ void CountingAlgorithm::db_count_square_with_interface_graph_optimization(const 
     Graph* transformed_cut_graph = new Graph();
     cut_graph->transformToAugmentedGraph(transformed_cut_graph);
 
+    clock_t counting_begin_clock = clock();
     cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+
     std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    std::cout << "Cut Graph : Counting Time - " << counting_time << std::endl;
     
     global_square_count += cut_graph_square_count;
 
@@ -661,13 +670,25 @@ void CountingAlgorithm::db_count_square_in_knkr(const std::string& file_path, co
         Graph* interface_graph = new Graph();
         interface_graph->loadKroneckerInterfaceGraphBidirectionOptimized(file_path, vertex_partition_file_path, ptn_idx); 
 
+        clock_t counting_begin_clock_1 = clock();  
         local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        double counting_time_1 = (double(clock() - counting_begin_clock_1)) / CLOCKS_PER_SEC;
+        std::cout << "Partition - " << ptn_idx << " : Counting Time (1)- " << counting_time_1 << std::endl;
+        clock_t counting_begin_clock_2 = clock();
         local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
-        local_interface_square_count = db_count_square_in_interface_graph(interface_graph);
+        double counting_time_2 = (double(clock() - counting_begin_clock_2)) / CLOCKS_PER_SEC;
+        std::cout << "Partition - " << ptn_idx << " : Counting Time (2)- " << counting_time_2 << std::endl;
+        clock_t counting_begin_clock_3 = clock(); 
+        local_interface_square_count = db_count_square_in_interface_graph_optimized(interface_graph);
+        double counting_time_3 = (double(clock() - counting_begin_clock_3)) / CLOCKS_PER_SEC;
+        std::cout << "Partition - " << ptn_idx << " : Counting Time (3)- " << counting_time_3 << std::endl;
+        
 
+        std::cout << "===================================================================================" << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;        
+        std::cout << "===================================================================================" << std::endl;
 
         global_square_count += local_square_count;
         global_square_count += local_cut_edge_square_count;
@@ -680,8 +701,12 @@ void CountingAlgorithm::db_count_square_in_knkr(const std::string& file_path, co
     Graph* transformed_cut_graph = new Graph();
     cut_graph->transformToAugmentedGraph(transformed_cut_graph);
 
+    clock_t counting_begin_clock = clock(); 
     cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+
     std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    std::cout << "Cut Graph : Counting Time - " << counting_time << std::endl;
     
     global_square_count += cut_graph_square_count;
 

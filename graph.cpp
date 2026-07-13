@@ -6235,6 +6235,29 @@ void Graph::loadKroneckerCutGraphBidirection(const std::string& file_path, const
 
 
 
+void Graph::printEntireGraphData() {
+
+    long long wedge_count = 0;
+    max_degree = 0;
+
+    for(ui i = 0; i < vertices_count; i++){
+        wedge_count += (degrees[i] * (degrees[i] - 1))/ 2;
+
+        if(max_degree < degrees[i]){
+            max_degree = degrees[i];
+        }
+    }    
+
+    std::cout << "|V|: " << vertices_count << ", |E|: " << edges_count << std::endl; 
+    std::cout << "Wedge Count : " << wedge_count << std::endl;
+       
+    double avg_degree = (double)(2 * edges_count) / (double) vertices_count;
+    std::cout << "Average Degree : " << avg_degree << std::endl;
+    std::cout << "Maximum Degree : " << max_degree << std::endl;
+}
+
+
+
 
 
 

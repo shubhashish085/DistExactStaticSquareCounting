@@ -565,3 +565,18 @@ int main(int argc, char** argv){
     std::cout << "==============================================" << std::endl;
 
 }*/
+
+
+//Graph Data Print
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+
+    Graph* graph = new Graph();
+    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    graph->loadGraphFromFile(input_data_graph_file);
+    graph->printEntireGraphData();   
+    std::cout << "==================================================" << std::endl;
+}*/
