@@ -121,7 +121,7 @@
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -135,15 +135,15 @@
 
     //CountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);     
     //CountingAlgorithm::optimized_db_count_square_in_bidirectional_graph_seq(input_data_graph_file, vertex_partition_file, partition_cnt);
-    CountingAlgorithm::db_count_square_with_interface_graph_optimization(input_data_graph_file, vertex_partition_file, partition_cnt);     
+    CountingAlgorithm::db_count_square_with_interface_graph_optimization_latest(input_data_graph_file, vertex_partition_file, partition_cnt);     
 
     std::cout << "==================================================" << std::endl;
 
-}*/
+}
 
 
 //Sequential Direction Based Square Count for Multiple Partitions - Kronecker 
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -159,7 +159,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 
 

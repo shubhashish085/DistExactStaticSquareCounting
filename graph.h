@@ -54,6 +54,7 @@ public:
     //For Interface Graph
     std::vector<std::pair<VertexID, VertexID>> interface_edges;
     std::unordered_set<std::pair<VertexID, VertexID>, hashFunction> other_ptn_edges;
+    std::vector<std::pair<VertexID, VertexID>> other_ptn_edge_list;
 
     Graph(){
         
@@ -88,6 +89,7 @@ public:
     void loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedInterfaceGraphLatest(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirectionOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
