@@ -121,7 +121,7 @@
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -139,7 +139,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 
 //Sequential Direction Based Square Count for Multiple Partitions - Kronecker 
@@ -179,7 +179,7 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    CountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);     
+    CountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip_latest(input_data_graph_file, vertex_partition_file, partition_cnt);     
 
     std::cout << "==================================================" << std::endl;
 
@@ -229,7 +229,7 @@ int main(int argc, char** argv){
 }*/
 
 //Undirected graph Multiple Partitions - Kahip
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -243,12 +243,13 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+    //DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+    DistributedCountingAlgorithm::db_count_square_with_interface_graph_latest_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
 
     std::cout << "######################################################################" << std::endl;
-}*/
+}
 
 //Bidirectional Edges
 /*int main(int argc, char** argv){
@@ -285,7 +286,8 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
+    //DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_detail(input_data_graph_file, vertex_partition_file, partition_cnt);
+    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_latest(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
 }*/
@@ -305,7 +307,8 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+    //DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+    DistributedCountingAlgorithm::db_count_square_with_interface_graph_optimization_in_bi_edges_kahip_latest(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     MPI_Finalize();
 }*/
