@@ -53,6 +53,35 @@
 }*/
 
 
+
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+
+    clock_t read_begin_clock = clock();
+    Graph* graph = new Graph();
+    graph->loadGraphFromFile(input_data_graph_file);
+    double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
+   
+
+    clock_t counting_begin_clock = clock();
+    long long exact_count = CountingAlgorithm::sequential_cpb_count_square(graph);
+    double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+
+    double total_time = input_read_time + counting_time;    
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Exact Square Count : " << exact_count << std::endl;    
+    std::cout << "Input File Reading Time : " << input_read_time << " seconds" << std::endl;
+    std::cout << "Counting Time : " << counting_time << " seconds" << std::endl;
+    std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
+    std::cout << "==============================================" << std::endl;
+
+}
+
+
+
 // Sequential Square Count in Vertex Ordered Graph
 /*int main(int argc, char** argv){
 

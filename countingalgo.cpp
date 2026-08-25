@@ -292,6 +292,45 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 
 }
 
+
+long long CountingAlgorithm::sequential_cpb_count_square(Graph* graph){
+
+    long long exact_count = 0;
+    VertexID *nbrs_1, *nbrs_2;
+    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0;
+    VertexID* v1_nbr_idx, *v2_nbr_idx; 
+    VertexID v2, v3, v4;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+        for (VertexID j = 0; j < nbrs_1_cnt; j++)
+        {
+            v2 = nbrs_1[j];
+            if(v1 > v2){
+                continue;
+            }
+            
+            nbrs_2 = graph->getVertexNeighbors(v2, nbrs_2_cnt);
+            v1_nbr_idx = std::upper_bound(nbrs_1, nbrs_1 + nbrs_1_cnt, v2);
+            v2_nbr_idx = std::upper_bound(nbrs_2, nbrs_2 + nbrs_2_cnt, v1);
+
+            for(VertexID* left_ptr = v1_nbr_idx; left_ptr < nbrs_1 + nbrs_1_cnt; left_ptr++){
+                for(VertexID* right_ptr = v2_nbr_idx; right_ptr < nbrs_2 + nbrs_2_cnt; right_ptr++){
+                    if((*left_ptr != *right_ptr) && graph->checkEdgeExistence(std::min(*left_ptr, *right_ptr) , std::min(*left_ptr, *right_ptr))){
+                        exact_count++;
+                    }
+                } 
+            }
+
+        }
+    }
+
+    return exact_count;
+}
+
+
+
 long long CountingAlgorithm::count_interface_edge_square(Graph* graph){
 
     VertexID begin, end;

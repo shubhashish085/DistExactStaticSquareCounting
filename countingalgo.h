@@ -2,6 +2,7 @@
 #define DESC_ALGORITHM_H
 
 #include <map>
+#include <algorithm>
 #include "graph.h"
 #include "types.h"
 
@@ -14,6 +15,7 @@ public:
     
     static long long sequential_wb_count_square(Graph* graph);
     static long long sequential_db_count_square(Graph* graph);
+    static long long sequential_cpb_count_square(Graph* graph);
     
 
     static void wb_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
