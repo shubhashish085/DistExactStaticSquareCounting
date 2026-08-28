@@ -259,6 +259,19 @@ public:
         other_ptn_edge_list.clear();
     }
 
+    void deleteAndClearForCutGraph(){
+
+        delete[] offsets;
+        delete[] neighbors;
+        
+        vertex_idx_map.clear();
+        wedge_map.clear();
+        other_ptn_vertex_idx_map.clear();
+        interface_edges.clear();
+        other_ptn_edges.clear();
+        other_ptn_edge_list.clear();
+    }
+
 
 };
 
