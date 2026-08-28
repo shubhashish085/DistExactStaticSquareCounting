@@ -243,6 +243,23 @@ public:
         return false;
     }
 
+
+    void deleteAndClear(){
+
+        delete[] offsets;
+        delete[] neighbors;
+        delete[] ghost_offsets;
+        delete[] ghost_neighbors;
+        
+        vertex_idx_map.clear();
+        wedge_map.clear();
+        other_ptn_vertex_idx_map.clear();
+        interface_edges.clear();
+        other_ptn_edges.clear();
+        other_ptn_edge_list.clear();
+    }
+
+
 };
 
 
