@@ -299,7 +299,7 @@ long long CountingAlgorithm::sequential_cpb_count_square(Graph* graph){
     VertexID *nbrs_1, *nbrs_2;
     ui nbrs_1_cnt = 0, nbrs_2_cnt = 0;
     VertexID* v1_nbr_idx, *v2_nbr_idx; 
-    VertexID v2, v3, v4;
+    VertexID v2;
 
     for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
     {
@@ -307,7 +307,7 @@ long long CountingAlgorithm::sequential_cpb_count_square(Graph* graph){
         for (VertexID j = 0; j < nbrs_1_cnt; j++)
         {
             v2 = nbrs_1[j];
-            if(v1 > v2){
+            if(v1 >= v2){
                 continue;
             }
             
@@ -317,7 +317,7 @@ long long CountingAlgorithm::sequential_cpb_count_square(Graph* graph){
 
             for(VertexID* left_ptr = v1_nbr_idx; left_ptr < nbrs_1 + nbrs_1_cnt; left_ptr++){
                 for(VertexID* right_ptr = v2_nbr_idx; right_ptr < nbrs_2 + nbrs_2_cnt; right_ptr++){
-                    if((*left_ptr != *right_ptr) && graph->checkEdgeExistence(std::min(*left_ptr, *right_ptr) , std::min(*left_ptr, *right_ptr))){
+                    if((*left_ptr != *right_ptr) && graph->checkEdgeExistence(std::min(*left_ptr, *right_ptr) , std::max(*left_ptr, *right_ptr))){
                         exact_count++;
                     }
                 } 
@@ -650,15 +650,30 @@ void CountingAlgorithm::db_count_square_with_interface_graph_optimization_latest
         local_graph->transformToAugmentedGraph(local_augmented_graph);        
 
         clock_t counting_begin_clock = clock();
+        
+        clock_t local_count_begin_clock = clock();
         local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        double local_graph_counting_time = (double(clock() - local_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t local_cut_count_begin_clock = clock();
         local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
+        double local_cut_graph_counting_time = (double(clock() - local_cut_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t ifc_count_begin_clock = clock();
         local_interface_square_count = db_count_square_in_interface_graph_latest(interface_graph);
+        double ifc_graph_counting_time = (double(clock() - ifc_count_begin_clock)) / CLOCKS_PER_SEC;
+
+
         double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+        
 
         std::cout << "===================================================================================" << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Graph Counting Time - " << local_graph_counting_time << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Counting Time - " << local_cut_graph_counting_time << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Interface Graph Counting Time - " << ifc_graph_counting_time << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Counting Time - " << counting_time << std::endl;
         std::cout << "===================================================================================" << std::endl;
 

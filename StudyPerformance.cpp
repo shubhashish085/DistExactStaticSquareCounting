@@ -53,14 +53,16 @@
 }*/
 
 
-
-int main(int argc, char** argv){
+//Sequential Centered-3-path-based Algorithm
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
     clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
-    graph->loadGraphFromFile(input_data_graph_file);
+    //graph->loadGraphFromFile(input_data_graph_file);
+    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    graph->loadOrderedGraphFromFile(input_data_graph_file);
     double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
    
 
@@ -78,7 +80,7 @@ int main(int argc, char** argv){
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}
+}*/
 
 
 
@@ -150,7 +152,7 @@ int main(int argc, char** argv){
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -168,7 +170,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}*/
+}
 
 
 //Sequential Direction Based Square Count for Multiple Partitions - Kronecker 
@@ -258,7 +260,7 @@ int main(int argc, char** argv){
 }*/
 
 //Undirected graph Multiple Partitions - Kahip
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -278,7 +280,7 @@ int main(int argc, char** argv){
     MPI_Finalize();
 
     std::cout << "######################################################################" << std::endl;
-}
+}*/
 
 //Bidirectional Edges
 /*int main(int argc, char** argv){
