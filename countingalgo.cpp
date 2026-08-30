@@ -695,7 +695,7 @@ void CountingAlgorithm::db_count_square_with_interface_graph_optimization_latest
     cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
     double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
 
-    cut_graph->deleteAndClear();
+    cut_graph->deleteAndClearForCutGraph();
 
     std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
     std::cout << "Cut Graph : Counting Time - " << counting_time << std::endl;
