@@ -128,7 +128,9 @@ public:
     void isKroneckerGraphUndirected(const std::string& file_path);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
+    void transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartition(Graph* augmented_graph);
+    void transformToAugmentedGraphWoPartitionAndVertexOrdering(Graph* augmented_graph);
     void buildPartitionWiseNbrCntArray (int partition_count, int partition_no){
         ptn_wise_nbr_cnt = new ui[partition_count];
         std::fill(ptn_wise_nbr_cnt, ptn_wise_nbr_cnt + partition_count, 0);

@@ -19,7 +19,7 @@
 #include "distributedcountingalgo.h"
 
 // Sequential Square Count
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -32,7 +32,8 @@
 
     clock_t transformation_begin_clock = clock();
     Graph* augmented_graph = new Graph();
-    graph->transformToAugmentedGraph(augmented_graph);
+    //graph->transformToAugmentedGraph(augmented_graph);
+    graph->transformToAugmentedGraphWoPartitionAndVertexOrdering(augmented_graph);
     double transformation_time = (double(clock() - transformation_begin_clock)) / CLOCKS_PER_SEC;    
 
     clock_t counting_begin_clock = clock();
@@ -50,7 +51,7 @@
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}*/
+}
 
 
 //Sequential Centered-3-path-based Algorithm
@@ -152,7 +153,7 @@
 
 
 //Sequential Direction Based Square Count for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -170,7 +171,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 
 //Sequential Direction Based Square Count for Multiple Partitions - Kronecker 
@@ -239,7 +240,7 @@ int main(int argc, char** argv){
 
 
 //Undirected graph Multiple Partitions - All Run
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -291,7 +292,7 @@ int main(int argc, char** argv){
     }
 
     MPI_Finalize();
-}
+}*/
 
 
 
