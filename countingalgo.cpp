@@ -23,6 +23,35 @@ static ui array_intersection(VertexID* array_1, ui array_1_len, VertexID* array_
     return count;
 }
 
+
+static ui modified_array_intersection(NodeID* part, VertexID* array_1, ui array_1_len, VertexID* array_2, ui array_2_len, VertexID p, NodeID p_ptn) {
+    ui i = 0, j = 0;
+    ui count = 0;
+    VertexID elm_1, elm_2;
+
+    while (i < array_1_len && j < array_2_len) {
+        
+        elm_1 = array_1[i];
+        elm_2 = array_2[j];
+
+        if ((elm_1 == elm_2) && (elm_1 > p) && (part[elm_1] != p_ptn)) {
+            count++;
+            i++;
+            j++;
+        } else if (elm_1 == elm_2) {
+            i++;
+            j++;
+        } else if (elm_1 < elm_2) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+
+    return count;
+}
+
+
 /*static VertexID array_intersection_elem(VertexID* array_1, ui array_1_len, VertexID* array_2, ui array_2_len) {
     ui i = 0, j = 0;
     ui count = 0;
@@ -192,6 +221,79 @@ long long CountingAlgorithm::bfy_count_in_three_partition(Graph* graph, int part
 }
 
 
+long long CountingAlgorithm::bfy_count_in_multi_partitions(Graph* graph, int partition_no){
+
+    long long count = 0;
+    std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+    
+    VertexID v1, v2;
+    ui nbrs_1_cnt = 0, wedge_cnt;
+    VertexID* nbrs;
+    
+    for(VertexID i = 0; i < graph->vertices_count; i++){
+        nbrs = graph->getVertexNeighbors(i, nbrs_1_cnt);
+        for(VertexID j = 0; j < nbrs_1_cnt; j++){
+            for(VertexID k = j + 1; k < nbrs_1_cnt; k++){
+                v1 = nbrs[j];
+                v2 = nbrs[k];
+                
+                if((graph->local_partition[v1] == graph->local_partition[v2]) && (graph->local_partition[v1] < partition_no)){
+                    continue;
+                }
+                
+                search_pair = std::make_pair(v1, v2);                
+
+                auto search = wedge_map.find(search_pair);
+                if (search == wedge_map.end()){
+                    wedge_map[search_pair] = 1;
+                }
+                else{
+                    wedge_cnt = wedge_map[search_pair];
+                    count += wedge_cnt;
+                    wedge_map[search_pair] = wedge_cnt + 1;
+                }
+            }
+        }
+    }
+
+    wedge_map.clear();
+
+    return count;
+}
+
+long long CountingAlgorithm::count_square_in_four_partitions(Graph* graph){
+
+    long long count = 0;
+    
+    VertexID p, q, r, s;
+    NodeID p_ptn, q_ptn;
+    ui p_nbr_cnt = 0, q_nbr_cnt = 0, r_nbr_cnt = 0;
+    VertexID* p_nbrs, *q_nbrs, *r_nbrs;
+    
+    for(VertexID p = 0; p < graph->vertices_count; p++){
+        p_nbrs = graph->getVertexNeighbors(p, p_nbr_cnt);
+        p_ptn = graph->local_partition[p];
+        for(VertexID j = 0; j < p_nbr_cnt; j++){
+            q = p_nbrs[j];
+            if(q >= p){
+                break;
+            }
+            q_ptn = graph->local_partition[q];
+            q_nbrs = graph->getVertexNeighbors(q, q_nbr_cnt);
+
+            for(VertexID k = j + 1; k < p_nbr_cnt; k++){
+                r = p_nbrs[k];
+                if(graph->local_partition[r] != q_ptn){
+                    r_nbrs = graph->getVertexNeighbors(r, r_nbr_cnt);
+                    count += modified_array_intersection(graph->local_partition, r_nbrs, r_nbr_cnt, q_nbrs, q_nbr_cnt, p, p_ptn);                    
+                }
+            }           
+        }
+    }
+
+    return count;
+}
 
 
 long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
@@ -427,6 +529,43 @@ long long CountingAlgorithm::count_interface_edge_square_latest(Graph* graph){
 }
 
 
+long long CountingAlgorithm::count_cut_square_in_large_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count){
+
+    long long  total_square_count = 0, local_cut_edge_square_count = 0,  four_ptn_square_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_count; ptn_idx++){
+
+        Graph* cut_edge_graph = new Graph();
+        cut_edge_graph->loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);              
+
+        clock_t counting_begin_clock = clock();
+        local_cut_edge_square_count = CountingAlgorithm::bfy_count_in_multi_partitions(cut_edge_graph, ptn_idx); 
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;        
+
+        std::cout << "===================================================================================" << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Counting Time (BFY) - " << counting_time << std::endl;
+        std::cout << "===================================================================================" << std::endl;
+        total_square_count += local_cut_edge_square_count;
+
+    }
+
+    Graph* cut_graph = new Graph();
+    cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+
+    clock_t four_ptn_sq_counting_clock = clock();
+    four_ptn_square_count = CountingAlgorithm::count_square_in_four_partitions(cut_graph);
+    double four_ptn_sq_counting_time = (double(clock() - four_ptn_sq_counting_clock)) / CLOCKS_PER_SEC;
+    total_square_count += four_ptn_square_count;
+
+    std::cout << "===================================================================================" << std::endl;
+    std::cout << "Cut Edge Square Count (4 Partitions) - " << four_ptn_square_count << std::endl;
+    std::cout << "Counting Time (4 Partitions) - " << four_ptn_sq_counting_time << std::endl;
+    std::cout << "Total Square Count : " << total_square_count << std::endl;
+    std::cout << "===================================================================================" << std::endl;
+
+}
+
 
 long long CountingAlgorithm::db_count_square_in_cut_graph(Graph* cut_graph){
 
@@ -530,6 +669,46 @@ void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string
     std::cout << "==============================================" << std::endl;
 
 }
+
+
+/*void CountingAlgorithm::db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long global_square_count = 0, local_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* local_augmented_graph = new Graph();
+        local_graph->transformToAugmentedGraph(local_augmented_graph);
+
+
+        
+
+        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+
+
+        global_square_count += local_square_count;
+        global_square_count += local_interface_square_count;
+    }
+
+    Graph* cut_graph = new Graph();
+    cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+
+    Graph* transformed_cut_graph = new Graph();
+    cut_graph->transformToAugmentedGraph(transformed_cut_graph);
+
+    cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    std::cout << "Global Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    
+    global_square_count += cut_graph_square_count;
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Global Square Count : " << global_square_count << std::endl;
+    std::cout << "==============================================" << std::endl;
+
+}*/
 
 
 void CountingAlgorithm::optimized_db_count_square_in_whole_ptn_graph_seq(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){

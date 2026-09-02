@@ -41,7 +41,12 @@ public:
     static long long db_count_square_in_interface_graph_latest(Graph* graph);
     static long long count_square_from_other_ptn_per_vertex(Graph* graph);
     static long long bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn);
-    static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);    
+    static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);
+    static long long bfy_count_in_multi_partitions(Graph* graph, int partition_no);
+    static long long count_square_in_four_partitions(Graph* graph);
+
+
+    static long long count_cut_square_in_large_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);    
 
     static long long count_interface_edge_square(Graph* graph);
     static long long count_interface_edge_square_optimized(Graph* graph);
