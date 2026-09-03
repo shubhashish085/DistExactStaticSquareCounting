@@ -1510,6 +1510,7 @@ void Graph::loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(const std::string&
 
     input_file.close();
 
+    offsets = new ui[vertices_count + 1];
     offsets[0] = 0;
     neighbors = new VertexID[cut_edges_count];
 
@@ -1544,6 +1545,7 @@ void Graph::loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(const std::string&
 
                 offset = offsets[begin_idx] + neighbors_offset[begin_idx];
                 neighbors[offset] = end_idx;
+                neighbors_offset[begin_idx] += 1;
 
             }else if ((partition[begin] != partition_no) && (partition[end] == partition_no)){
 
@@ -1552,6 +1554,7 @@ void Graph::loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(const std::string&
 
                 offset = offsets[end_idx] + neighbors_offset[end_idx];
                 neighbors[offset] = begin_idx;
+                neighbors_offset[end_idx] += 1;
             }
         }
     }
@@ -1561,6 +1564,8 @@ void Graph::loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(const std::string&
     for (ui i = 0; i < vertices_count; ++i){
         std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
     }
+
+    //std::cout << "Loading Finished" << std::endl;
 }
 
 

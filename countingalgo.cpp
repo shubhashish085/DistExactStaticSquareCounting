@@ -228,17 +228,20 @@ long long CountingAlgorithm::bfy_count_in_multi_partitions(Graph* graph, int par
     std::pair<VertexID, VertexID> search_pair;
     
     VertexID v1, v2;
+    NodeID v1_ptn, v2_ptn; 
     ui nbrs_1_cnt = 0, wedge_cnt;
     VertexID* nbrs;
     
     for(VertexID i = 0; i < graph->vertices_count; i++){
         nbrs = graph->getVertexNeighbors(i, nbrs_1_cnt);
-        for(VertexID j = 0; j < nbrs_1_cnt; j++){
+        for(VertexID j = 0; j < nbrs_1_cnt - 1; j++){
             for(VertexID k = j + 1; k < nbrs_1_cnt; k++){
                 v1 = nbrs[j];
                 v2 = nbrs[k];
+                v1_ptn = graph->local_partition[v1];
+                v2_ptn = graph->local_partition[v2];
                 
-                if((graph->local_partition[v1] == graph->local_partition[v2]) && (graph->local_partition[v1] < partition_no)){
+                if((v1_ptn == v2_ptn) && (v1_ptn < partition_no)){
                     continue;
                 }
                 
@@ -257,7 +260,7 @@ long long CountingAlgorithm::bfy_count_in_multi_partitions(Graph* graph, int par
         }
     }
 
-    wedge_map.clear();
+    //wedge_map.clear();
 
     return count;
 }
@@ -532,22 +535,24 @@ long long CountingAlgorithm::count_interface_edge_square_latest(Graph* graph){
 long long CountingAlgorithm::count_cut_square_in_large_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count){
 
     long long  total_square_count = 0, local_cut_edge_square_count = 0,  four_ptn_square_count = 0;
+    double total_time = 0, comparison_time = 0.0;
 
     for (int ptn_idx = 0; ptn_idx < partition_count; ptn_idx++){
-
+    
         Graph* cut_edge_graph = new Graph();
         cut_edge_graph->loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);              
 
         clock_t counting_begin_clock = clock();
         local_cut_edge_square_count = CountingAlgorithm::bfy_count_in_multi_partitions(cut_edge_graph, ptn_idx); 
-        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;        
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+        total_time += counting_time;
+        comparison_time = std::max(comparison_time, counting_time);        
 
         std::cout << "===================================================================================" << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
         std::cout << "Partition - " << ptn_idx << " : Counting Time (BFY) - " << counting_time << std::endl;
         std::cout << "===================================================================================" << std::endl;
         total_square_count += local_cut_edge_square_count;
-
     }
 
     Graph* cut_graph = new Graph();
@@ -557,12 +562,18 @@ long long CountingAlgorithm::count_cut_square_in_large_graph(const std::string& 
     four_ptn_square_count = CountingAlgorithm::count_square_in_four_partitions(cut_graph);
     double four_ptn_sq_counting_time = (double(clock() - four_ptn_sq_counting_clock)) / CLOCKS_PER_SEC;
     total_square_count += four_ptn_square_count;
+    total_time += four_ptn_sq_counting_time;
+    comparison_time += four_ptn_sq_counting_time;
 
     std::cout << "===================================================================================" << std::endl;
     std::cout << "Cut Edge Square Count (4 Partitions) - " << four_ptn_square_count << std::endl;
     std::cout << "Counting Time (4 Partitions) - " << four_ptn_sq_counting_time << std::endl;
     std::cout << "Total Square Count : " << total_square_count << std::endl;
+    std::cout << "Total Time : " << total_time << std::endl;
+    std::cout << "Comparison Time : " << comparison_time << std::endl;
     std::cout << "===================================================================================" << std::endl;
+
+    return total_square_count;
 
 }
 

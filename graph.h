@@ -148,7 +148,7 @@ public:
             }
         }
 
-        for(ui i = 0; i < partition_count; i++){
+        for(int i = 0; i < partition_count; i++){
             ptn_nbr_array[i] = new VertexID[ptn_wise_nbr_cnt[i]];
         }
 

@@ -186,11 +186,11 @@ int main(int argc, char** argv){
 
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
-    std::cout << "Partition Count : " << partition_count << std::endl;
+    std::cout << "Partition Count : " << partition_cnt << std::endl;
 
-    CountingAlgorithm::count_cut_square_in_large_graph(input_data_graph_file, vertex_partition_file, partition_cnt);     
+    CountingAlgorithm::count_cut_square_in_large_graph(input_data_graph_file, vertex_partition_file, partition_cnt);  
 
-    std::cout << "==================================================" << std::endl;
+    std::cout << "##################################################" << std::endl;
 
 }
 
