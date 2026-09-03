@@ -176,7 +176,7 @@
 
 
 //Cut Graph Square Count for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -191,6 +191,23 @@ int main(int argc, char** argv){
     CountingAlgorithm::count_cut_square_in_large_graph(input_data_graph_file, vertex_partition_file, partition_cnt);  
 
     std::cout << "##################################################" << std::endl;
+
+}*/
+
+//Cut Edge Analysis
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_cnt << std::endl;
+
+    Analysis::analyse_cut_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
 
 }
 
