@@ -1240,10 +1240,11 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
         local_cut_graph_bfy_count = CountingAlgorithm::bfy_count_in_multi_partitions(local_cut_graph, ptn_idx); 
         double cut_graph_bfy_counting_time = (double(clock() - local_cut_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
 
-        clock_t cut_graph_four_ptn_sq_cnt_begin_clock = clock();
-        four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions(global_cut_graph, local_cut_edge_list); 
-        double cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
-
+        if(partition_cnt >= 4) {
+            clock_t cut_graph_four_ptn_sq_cnt_begin_clock = clock();
+            four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions(global_cut_graph, local_cut_edge_list); 
+            double cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
+        }
 
         double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
         
