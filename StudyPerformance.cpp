@@ -207,7 +207,8 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_cnt << std::endl;
 
-    Analysis::analyse_cut_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    //Analysis::analyse_cut_edges(input_data_graph_file, vertex_partition_file, partition_cnt);
+    Analysis::analyse_cut_edges_for_both_direction_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
 
 }
 

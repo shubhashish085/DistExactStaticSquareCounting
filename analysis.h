@@ -13,6 +13,7 @@ public:
     static void degree_based_analysis(Graph* graph);
 
     static void analyse_cut_edges(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void analyse_cut_edges_for_both_direction_edges (const std::string& file_path, const std::string& vtx_ptn_file_path, int partition_count);
 
     //static void opt_wb_count_square_in_partitioned_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_no);
 

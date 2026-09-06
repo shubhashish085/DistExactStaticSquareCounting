@@ -561,3 +561,105 @@ void Analysis::analyse_cut_edges(const std::string& file_path, const std::string
     std::cout << "--------------------------------------------" << std::endl;
 }
 
+void Analysis::analyse_cut_edges_for_both_direction_edges (const std::string& file_path, const std::string& vtx_ptn_file_path, int partition_count)
+{
+
+    NodeID partition_id;
+    VertexID vertex_id;
+    bool contains_in_partition = false;
+
+    std::ifstream vertex_partition_file(vtx_ptn_file_path);
+    std::ifstream infile(file_path);
+
+    if (!vertex_partition_file.is_open() || !infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << vtx_ptn_file_path << " or " << file_path << "." << std::endl;
+        exit(-1);
+    }
+
+    ui total_vertices_count = 0;
+
+    while (vertex_partition_file >> vertex_id){
+
+        vertex_partition_file >> partition_id;
+        total_vertices_count++;
+    }
+
+    vertex_partition_file.close();
+
+    std::ifstream vtx_ptn_file(vtx_ptn_file_path);
+
+    NodeID* partition = new NodeID[total_vertices_count];
+
+    while (vtx_ptn_file >> vertex_id)
+    {
+        vtx_ptn_file >> partition_id;
+        partition[vertex_id] = partition_id;
+    }
+
+    vtx_ptn_file.close();
+
+    ui line_count = 0, comment_line_count = 4;
+    VertexID begin, end;
+    std::string input_line;
+
+    while (std::getline(infile, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    ui cut_edges_count = 0, max_cut_edge_in_one_partition = 0;
+    std::map<NodeID, ui> ptn_cut_edge_count_map;
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if((begin < end) && (partition[begin] != partition[end])){
+
+                NodeID begin_ptn = partition[begin], end_ptn = partition[end];
+
+                auto search = ptn_cut_edge_count_map.find(begin_ptn);
+                if (search == ptn_cut_edge_count_map.end()){
+                    ptn_cut_edge_count_map[begin_ptn] = 1;
+                }
+                else{
+                    ptn_cut_edge_count_map[begin_ptn] = ptn_cut_edge_count_map[begin_ptn] + 1;
+                }
+
+                search = ptn_cut_edge_count_map.find(end_ptn);
+                if (search == ptn_cut_edge_count_map.end()){
+                    ptn_cut_edge_count_map[end_ptn] = 1;
+                }
+                else{
+                    ptn_cut_edge_count_map[end_ptn] = ptn_cut_edge_count_map[end_ptn] + 1;
+                }           
+
+                cut_edges_count++;                                
+            }
+        }
+    }
+
+    infile.close();
+
+    for(NodeID i = 0; i < partition_count; i++){
+        auto search = ptn_cut_edge_count_map.find(i);
+        if(search != ptn_cut_edge_count_map.end()){
+            max_cut_edge_in_one_partition = std::max(max_cut_edge_in_one_partition, ptn_cut_edge_count_map[i]);
+        }        
+    }
+    
+    std::cout << "Cut Edge Count : " << cut_edges_count << std::endl;
+    std::cout << "Max Cut Edges in One Partition : " << max_cut_edge_in_one_partition << std::endl;
+    std::cout << "--------------------------------------------" << std::endl;
+    std::cout << "--------------------------------------------" << std::endl;
+}
+
+
