@@ -95,6 +95,7 @@ public:
     void loadPartitionedInterfaceGraphBidirectionOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirectionLatest(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
+    void loadCutGraphWithLocalCutEdges(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx, std::vector<std::pair<VertexID, VertexID>>& local_cut_edges);
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file_path);
 

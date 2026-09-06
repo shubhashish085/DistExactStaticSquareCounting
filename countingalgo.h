@@ -28,6 +28,7 @@ public:
 
     static void db_count_square_with_interface_graph_optimization(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_interface_graph_optimization_latest(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_interface_graph_optimization_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_interface_graph_optimization_kahip_latest(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 
@@ -44,9 +45,9 @@ public:
     static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);
     static long long bfy_count_in_multi_partitions(Graph* graph, int partition_no);
     static long long count_square_in_four_partitions(Graph* graph);
+    static long long local_count_square_in_four_partitions(Graph* graph, std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list);
 
-
-    static long long count_cut_square_in_large_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);    
+    static long long count_cut_square_in_large_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);   
 
     static long long count_interface_edge_square(Graph* graph);
     static long long count_interface_edge_square_optimized(Graph* graph);
