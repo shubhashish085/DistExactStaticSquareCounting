@@ -3544,7 +3544,7 @@ void Graph::loadCutGraphWithLocalCutEdges(const std::string& file_path, const st
     vertices_count = 0;
     vertex_idx_map.clear();
 
-    std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
+    //std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
 
     ui line_count = 0, comment_line_count = 4;
     VertexID begin, end;
@@ -3683,7 +3683,7 @@ void Graph::loadCutGraphWithLocalCutEdges(const std::string& file_path, const st
         neighbors_offset[end] += 1;
     }
 
-    std::cout << "Cut Graph : Neighbor Loading Finished" << std::endl;
+    //std::cout << "Cut Graph : Neighbor Loading Finished" << std::endl;
 
     for (ui i = 0; i < vertices_count; ++i){
         std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);

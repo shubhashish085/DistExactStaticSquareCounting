@@ -1237,6 +1237,8 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
         local_interface_square_count = db_count_square_in_interface_graph_latest(interface_graph);
         double ifc_graph_counting_time = (double(clock() - ifc_count_begin_clock)) / CLOCKS_PER_SEC;
 
+        std::cout << "Cut Graph Computation Started" << std::endl;
+        
         clock_t local_cut_bfy_count_begin_clock = clock();
         local_cut_graph_bfy_count = CountingAlgorithm::bfy_count_in_multi_partitions(local_cut_graph, ptn_idx); 
         double cut_graph_bfy_counting_time = (double(clock() - local_cut_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
@@ -1276,5 +1278,10 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
         global_cut_graph->deleteAndClearForCutGraph();
         local_cut_edge_list.clear();
     }
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Partition Count : " << partition_cnt << "  --  Global Square Count : " << global_square_count << std::endl;
+    std::cout << "==============================================" << std::endl;
+
 }
 
