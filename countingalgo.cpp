@@ -1270,6 +1270,7 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
 
         local_graph->deleteAndClear();
         interface_graph->deleteAndClear();
+        local_cut_graph->deleteAndClearForCutGraph();
         global_cut_graph->deleteAndClearForCutGraph();
         local_cut_edge_list.clear();
     }
