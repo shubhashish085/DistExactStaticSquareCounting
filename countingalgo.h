@@ -16,6 +16,7 @@ public:
     static long long sequential_wb_count_square(Graph* graph);
     static long long sequential_db_count_square(Graph* graph);
     static long long sequential_db_count_square_with_random_ordering(Graph* graph);
+    static long long sequential_db_count_square_with_core_ordering(Graph* graph);
     static long long sequential_cpb_count_square(Graph* graph);
     
 

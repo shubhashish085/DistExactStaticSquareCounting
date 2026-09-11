@@ -36,6 +36,8 @@ public:
     ui* ghost_degrees;
     ui* main_degrees;
 
+    ui* core;
+
     ui* offsets;
     VertexID * neighbors;
     ui* ghost_offsets;
@@ -124,6 +126,8 @@ public:
     void loadKroneckerCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadKroneckerCutGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file);
 
+    void computeCoreForVertices();
+
     void convertGraphToMETISFormat(const std::string& output_file_path);
     void convertGraphToMETISFormatBidirectionalEdges(const std::string& output_file_path);
     void printGraphMetaData();
@@ -131,11 +135,13 @@ public:
 
     bool is_smaller(VertexID u, VertexID v);
     bool is_smaller_ro(VertexID u, VertexID v);
+    bool is_smaller_core(VertexID u, VertexID v);
     void isKroneckerGraphUndirected(const std::string& file_path);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
     void transformToAugmentedGraphWithRandomOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph);
+    void transformToAugmentedGraphWithCoreOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartition(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartitionAndVertexOrdering(Graph* augmented_graph);
     void buildPartitionWiseNbrCntArray (int partition_count, int partition_no){

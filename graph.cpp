@@ -3803,6 +3803,28 @@ bool Graph::is_smaller(VertexID u, VertexID v){
     return false;
 }
 
+bool Graph::is_smaller_core(VertexID u, VertexID v){
+
+
+    if(u == v){
+        return false;
+    }
+
+    if(core[u] < core[v]){
+        return true;
+    }
+
+    if((core[u] == core[v]) && (main_degrees[u] < main_degrees[v])){
+        return true;
+    }
+
+    if((core[u] == core[v]) && (main_degrees[u] == main_degrees[v]) && (u < v)){
+        return true;
+    }
+
+    return false;
+}
+
 bool Graph::is_smaller_ro(VertexID u, VertexID v){
 
 
@@ -3875,6 +3897,65 @@ void Graph::transformToAugmentedGraph(Graph* augmented_graph){
         }
     }   
 }
+
+void Graph::transformToAugmentedGraphWithCoreOrdering(Graph* augmented_graph){
+
+    augmented_graph->vertices_count = vertices_count;
+    augmented_graph->edges_count = edges_count;
+    augmented_graph->offsets = new ui[vertices_count + 1];
+    augmented_graph->neighbors = new VertexID[edges_count];
+    augmented_graph->partition = new NodeID[vertices_count];
+
+    augmented_graph->offsets[0] = 0;
+
+    augmented_graph->main_degrees = new ui[augmented_graph->vertices_count];
+    augmented_graph->core = new ui[vertices_count];
+    augmented_graph->degrees = new ui[augmented_graph->vertices_count];
+    std::fill(augmented_graph->degrees, augmented_graph->degrees + augmented_graph->vertices_count, 0);
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        augmented_graph->core[i] = core[i];
+    }
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+            if ((augmented_graph->core[neighbors[j]] > augmented_graph->core[i]) || ((augmented_graph->core[neighbors[j]] == augmented_graph->core[i]) && (degrees[neighbors[j]] > degrees[i])) || 
+                ((augmented_graph->core[neighbors[j]] == augmented_graph->core[i]) && (degrees[neighbors[j]] == degrees[i]) && (neighbors[j] > i)))
+            {
+                augmented_graph->degrees[i] += 1;
+            }
+        }
+    }
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        augmented_graph->offsets[i + 1] = augmented_graph->offsets[i] + augmented_graph->degrees[i];
+        augmented_graph->main_degrees[i] = degrees[i];
+    }
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+    ui offset;
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+
+            if ((augmented_graph->core[neighbors[j]] > augmented_graph->core[i]) || ((augmented_graph->core[neighbors[j]] == augmented_graph->core[i]) && (degrees[neighbors[j]] > degrees[i])) || 
+                ((augmented_graph->core[neighbors[j]] == augmented_graph->core[i]) && (degrees[neighbors[j]] == degrees[i]) && (neighbors[j] > i)))
+            {
+
+                offset = augmented_graph->offsets[i] + neighbors_offset[i];
+                augmented_graph->neighbors[offset] = neighbors[j];
+                neighbors_offset[i] += 1;
+            }
+        }
+    }   
+}
+
 
 
 void Graph::transformToAugmentedGraphWithRandomOrdering(Graph* augmented_graph){
@@ -7913,7 +7994,81 @@ void Graph::printEntireGraphData() {
 
 
 
+void Graph::computeCoreForVertices(){
 
+    //std::cout << "Computing Core Vertices " << std::endl;
+
+    max_degree = 0;
+    core = new ui[vertices_count];
+
+    for (ui i = 0; i < vertices_count; i++) {
+        core[i] = degrees[i];
+    }
+
+    for (ui i = 0; i < vertices_count; ++i) {
+        max_degree = std::max(max_degree, degrees[i]);
+    }
+
+    std::vector<ui> bin(max_degree + 1, 0);
+    for (ui i = 0; i < vertices_count; ++i) {
+        bin[degrees[i]]++;
+    }
+
+    ui start = 0, num;
+    for (ui i = 0; i <= max_degree; ++i) {
+        num = bin[i];
+        bin[i] = start;
+        start += num;
+    }
+
+    std::vector<VertexID> vert(vertices_count);
+    std::vector<VertexID> pos(vertices_count);
+
+    for (ui i = 0; i < vertices_count; ++i) {
+        pos[i] = bin[degrees[i]];
+        vert[pos[i]] = i;
+        bin[degrees[i]]++;
+    }
+
+    for (ui i = max_degree; i > 0; --i) {
+        bin[i] = bin[i - 1];
+    }
+    bin[0] = 0;
+
+    VertexID u, v, pu, w;
+    VertexID* u_nbrs;
+    ui u_nbr_cnt, du, pw;
+
+    for (ui i = 0; i < vertices_count; ++i) {
+        u = vert[i];
+        u_nbrs = getVertexNeighbors(u, u_nbr_cnt);
+
+        for (ui j = 0; j < u_nbr_cnt; j++) {
+            v = u_nbrs[j];
+
+            if (core[v] > core[u]) {
+
+                du = core[v];
+                pu = pos[v];
+                pw = bin[du];
+                w = vert[pw];
+
+                if (pu != pw) {
+                    pos[v] = pw;
+                    vert[pu] = w;
+                    pos[w] = pu;
+                    vert[pw] = v;
+                }
+
+                bin[du]++;
+                core[v]--;
+            }
+        }
+    }
+
+    //std::cout << "Computing Core Vertices Finished" << std::endl;
+
+}
 
 
 
