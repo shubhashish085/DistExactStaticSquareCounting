@@ -435,6 +435,106 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 }
 
 
+long long CountingAlgorithm::sequential_db_count_square_with_random_ordering(Graph* graph){
+
+    long long exact_count = 0;
+    VertexID *nbrs_1, *nbrs_2, *nbrs_3, *nbrs_4;
+    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0, nbrs_3_cnt = 0, nbrs_4_cnt = 0;
+    VertexID v2, v3, v4;
+
+
+    // 1243 - Square
+    long long count_1 = 0;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+        for (VertexID j = 0; j < nbrs_1_cnt; j++)
+        {
+            v2 = nbrs_1[j];
+            nbrs_2 = graph->getVertexNeighbors(v2, nbrs_2_cnt);
+            for (VertexID k = 0; k < nbrs_1_cnt; k++)
+            {
+                count_1 = 0;
+                v3 = nbrs_1[k];
+                if(!(graph->is_smaller_ro(v2, v3))){
+                    continue;
+                }
+
+                nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
+                count_1 = array_intersection(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
+                exact_count += count_1;
+
+            }
+        }
+    }
+
+    //std::cout << "Count 1 : " << exact_count << std::endl;
+    // 1234 - Square
+
+    long long count_2 = 0;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+        for (VertexID j = 0; j < nbrs_1_cnt; j++)
+        {
+            v2 = nbrs_1[j];
+            nbrs_2 = graph->getVertexNeighbors(v2, nbrs_2_cnt);
+            for (VertexID k = 0; k < nbrs_2_cnt; k++)
+            {
+                count_2 = 0;
+                v3 = nbrs_2[k];
+                nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
+                count_2 = array_intersection(nbrs_1, nbrs_1_cnt, nbrs_3, nbrs_3_cnt);
+                exact_count += count_2;
+            }
+        }
+    }
+
+    //std::cout << "Count 2 : " << exact_count << std::endl;
+
+    // 1324 - Square
+    long long count_3 = 0;
+    std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+
+        for (ui j = 0; j < nbrs_1_cnt; j++)
+        {
+            for (ui k = j+1; k < nbrs_1_cnt; k++)
+            {
+                search_pair = std::make_pair(std::min(nbrs_1[j], nbrs_1[k]), std::max(nbrs_1[j], nbrs_1[k]));
+                auto search = wedge_map.find(search_pair);
+                if (search == wedge_map.end())
+                {
+                    wedge_map[search_pair] = 1;
+                }
+                else
+                {
+                    wedge_map[search_pair] = wedge_map[search_pair] + 1;
+                }
+            }
+        }
+    }
+
+    for (auto const &[key, value] : wedge_map){
+        count_3 += (value * (value - 1)) / 2;
+    }
+
+    //std::cout << "Count 3 : " << count_3 << std::endl;
+
+    exact_count += count_3;
+
+    return exact_count;
+
+}
+
+
+
 long long CountingAlgorithm::sequential_cpb_count_square(Graph* graph){
 
     long long exact_count = 0;

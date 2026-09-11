@@ -4,6 +4,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <random>
 #include <vector>
 #include <map>
 #include "types.h"
@@ -55,6 +56,8 @@ public:
     std::vector<std::pair<VertexID, VertexID>> interface_edges;
     std::unordered_set<std::pair<VertexID, VertexID>, hashFunction> other_ptn_edges;
     std::vector<std::pair<VertexID, VertexID>> other_ptn_edge_list;
+
+    std::vector<VertexID> random_order;
 
     Graph(){
         
@@ -127,9 +130,11 @@ public:
     void printEntireGraphData();
 
     bool is_smaller(VertexID u, VertexID v);
+    bool is_smaller_ro(VertexID u, VertexID v);
     void isKroneckerGraphUndirected(const std::string& file_path);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
+    void transformToAugmentedGraphWithRandomOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartition(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartitionAndVertexOrdering(Graph* augmented_graph);
