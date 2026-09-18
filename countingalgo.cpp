@@ -633,6 +633,105 @@ long long CountingAlgorithm::sequential_db_count_square_with_core_ordering(Graph
 }
 
 
+long long CountingAlgorithm::sequential_db_count_square_with_only_core_ordering(Graph* graph){
+
+    long long exact_count = 0;
+    VertexID *nbrs_1, *nbrs_2, *nbrs_3, *nbrs_4;
+    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0, nbrs_3_cnt = 0, nbrs_4_cnt = 0;
+    VertexID v2, v3, v4;
+
+
+    // 1243 - Square
+    long long count_1 = 0;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+        for (VertexID j = 0; j < nbrs_1_cnt; j++)
+        {
+            v2 = nbrs_1[j];
+            nbrs_2 = graph->getVertexNeighbors(v2, nbrs_2_cnt);
+            for (VertexID k = 0; k < nbrs_1_cnt; k++)
+            {
+                count_1 = 0;
+                v3 = nbrs_1[k];
+                if(!(graph->is_smaller_core_only(v2, v3))){
+                    continue;
+                }
+
+                nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
+                count_1 = array_intersection(nbrs_2, nbrs_2_cnt, nbrs_3, nbrs_3_cnt);
+                exact_count += count_1;
+
+            }
+        }
+    }
+
+    //std::cout << "Count 1 : " << exact_count << std::endl;
+    // 1234 - Square
+
+    long long count_2 = 0;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+        for (VertexID j = 0; j < nbrs_1_cnt; j++)
+        {
+            v2 = nbrs_1[j];
+            nbrs_2 = graph->getVertexNeighbors(v2, nbrs_2_cnt);
+            for (VertexID k = 0; k < nbrs_2_cnt; k++)
+            {
+                count_2 = 0;
+                v3 = nbrs_2[k];
+                nbrs_3 = graph->getVertexNeighbors(v3, nbrs_3_cnt);
+                count_2 = array_intersection(nbrs_1, nbrs_1_cnt, nbrs_3, nbrs_3_cnt);
+                exact_count += count_2;
+            }
+        }
+    }
+
+    //std::cout << "Count 2 : " << exact_count << std::endl;
+
+    // 1324 - Square
+    long long count_3 = 0;
+    std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+
+        for (ui j = 0; j < nbrs_1_cnt; j++)
+        {
+            for (ui k = j+1; k < nbrs_1_cnt; k++)
+            {
+                search_pair = std::make_pair(std::min(nbrs_1[j], nbrs_1[k]), std::max(nbrs_1[j], nbrs_1[k]));
+                auto search = wedge_map.find(search_pair);
+                if (search == wedge_map.end())
+                {
+                    wedge_map[search_pair] = 1;
+                }
+                else
+                {
+                    wedge_map[search_pair] = wedge_map[search_pair] + 1;
+                }
+            }
+        }
+    }
+
+    for (auto const &[key, value] : wedge_map){
+        count_3 += (value * (value - 1)) / 2;
+    }
+
+    //std::cout << "Count 3 : " << count_3 << std::endl;
+
+    exact_count += count_3;
+
+    return exact_count;
+
+}
+
+
 long long CountingAlgorithm::sequential_cpb_count_square(Graph* graph){
 
     long long exact_count = 0;
@@ -1482,4 +1581,94 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
     std::cout << "==============================================" << std::endl;
 
 }
+
+
+void CountingAlgorithm::print_db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long global_square_count = 0, local_square_count = 0, local_cut_edge_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0, four_ptn_sq_count = 0;
+    long long local_cut_graph_bfy_count = 0;
+    double cut_graph_four_ptn_sq_counting_time = 0.0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* interface_graph = new Graph();
+        interface_graph->loadPartitionedInterfaceGraphLatest(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* local_cut_graph = new Graph();
+        local_cut_graph->loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* global_cut_graph = new Graph();
+        global_cut_graph->loadCutGraphWithLocalCutEdges(file_path, vertex_partition_file_path, ptn_idx, local_cut_edge_list);
+
+        Graph* local_augmented_graph = new Graph();
+        local_graph->transformToAugmentedGraph(local_augmented_graph);        
+
+        clock_t counting_begin_clock = clock();
+        
+        clock_t local_count_begin_clock = clock();
+        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        double local_graph_counting_time = (double(clock() - local_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t local_cut_count_begin_clock = clock();
+        local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
+        double local_cut_graph_counting_time = (double(clock() - local_cut_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t ifc_count_begin_clock = clock();
+        local_interface_square_count = db_count_square_in_interface_graph_latest(interface_graph);
+        double ifc_graph_counting_time = (double(clock() - ifc_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        std::cout << "Cut Graph Computation Started" << std::endl;
+        
+        clock_t local_cut_bfy_count_begin_clock = clock();
+        local_cut_graph_bfy_count = CountingAlgorithm::bfy_count_in_multi_partitions(local_cut_graph, ptn_idx); 
+        double cut_graph_bfy_counting_time = (double(clock() - local_cut_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        if(partition_cnt >= 4) {
+            clock_t cut_graph_four_ptn_sq_cnt_begin_clock = clock();
+            four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions(global_cut_graph, local_cut_edge_list); 
+            cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
+        }
+
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+        
+
+
+
+
+        std::cout << "===================================================================================" << std::endl;
+        std::cout << "Partition - " << ptn_idx << std::endl;
+        std::cout << "Local & Interface Graph : " << std::endl;
+        local_graph->print_graph_data();
+        interface_graph->print_interface_graph_details();
+        std::cout << "Cut Graph : " << std::endl;
+        local_cut_graph->print_graph_data();
+        local_cut_graph->print_wedge_map_stats();   
+        std::cout << "Local Square Count - " << local_square_count << std::endl;
+        std::cout << "Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
+        std::cout << "Local Cut Graph Bfy Count - " << local_cut_graph_bfy_count << std::endl;
+        std::cout << "Local Interface Square Count - " << local_interface_square_count << std::endl;
+        std::cout << "Local Cut Graph Four Partition Square Count - " << four_ptn_sq_count << std::endl;
+        std::cout << "Local Graph Counting Time - " << local_graph_counting_time << std::endl;
+        std::cout << "Local Cut Graph Counting Time - " << local_cut_graph_counting_time << std::endl;
+        std::cout << "Local Cut Graph Bfy Counting Time - " << cut_graph_bfy_counting_time << std::endl;
+        std::cout << "Interface Graph Counting Time - " << ifc_graph_counting_time << std::endl;
+        std::cout << "Four Partition Square Counting Time - " << cut_graph_four_ptn_sq_counting_time << std::endl;
+        std::cout << "Counting Time - " << counting_time << std::endl;
+        std::cout << "===================================================================================" << std::endl;
+
+
+        local_graph->deleteAndClear();
+        interface_graph->deleteAndClear();
+        local_cut_graph->deleteAndClearForCutGraph();
+        global_cut_graph->deleteAndClearForCutGraph();
+        local_cut_edge_list.clear();
+    }
+
+}
+
 

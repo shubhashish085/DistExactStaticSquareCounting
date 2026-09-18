@@ -17,6 +17,7 @@ public:
     static long long sequential_db_count_square(Graph* graph);
     static long long sequential_db_count_square_with_random_ordering(Graph* graph);
     static long long sequential_db_count_square_with_core_ordering(Graph* graph);
+    static long long sequential_db_count_square_with_only_core_ordering(Graph* graph);
     static long long sequential_cpb_count_square(Graph* graph);
     
 
@@ -31,6 +32,7 @@ public:
     static void db_count_square_with_interface_graph_optimization(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_interface_graph_optimization_latest(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void print_db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_interface_graph_optimization_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_interface_graph_optimization_kahip_latest(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 

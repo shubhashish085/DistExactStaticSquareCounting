@@ -136,12 +136,14 @@ public:
     bool is_smaller(VertexID u, VertexID v);
     bool is_smaller_ro(VertexID u, VertexID v);
     bool is_smaller_core(VertexID u, VertexID v);
+    bool is_smaller_core_only(VertexID u, VertexID v);
     void isKroneckerGraphUndirected(const std::string& file_path);
     
     void transformToAugmentedGraph(Graph* augmented_graph);
     void transformToAugmentedGraphWithRandomOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWithCoreOrdering(Graph* augmented_graph);
+    void transformToAugmentedGraphWithOnlyCoreOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartition(Graph* augmented_graph);
     void transformToAugmentedGraphWoPartitionAndVertexOrdering(Graph* augmented_graph);
     void buildPartitionWiseNbrCntArray (int partition_count, int partition_no){
@@ -233,6 +235,33 @@ public:
 
         std::cout << std::endl;
     }
+
+    void print_graph_data(){
+
+        double avg_degree = 0.0;
+
+        for (ui i = 0; i < vertices_count; i++){
+            avg_degree = degrees[i];
+        }
+
+        if(vertices_count != 0){
+            avg_degree /= vertices_count;
+        }
+
+        std::cout << "Vertices Count : " << vertices_count << " Edges Count : " << edges_count << " Avg Degree : " << avg_degree << ""  << std::endl;
+        std::cout << "Ghost Vertices Count : " << ghost_vertices_count <<  "Cut Graph Edge Count : " << cut_edges_count << std::endl;
+    }
+
+
+    void print_interface_graph_details(){
+
+        std::cout << "Interface Edge Count : " << interface_edges.size() <<  std::endl;
+    }
+
+    void print_wedge_map_stats(){
+        std::cout << "Map Size : " << wedge_map.size() << std::endl; 
+    }
+
 
 
     bool checkEdgeExistence(VertexID u, VertexID v) const {

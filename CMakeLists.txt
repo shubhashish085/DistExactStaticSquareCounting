@@ -24,7 +24,9 @@ set(DISTRIBUTED_SQUARE_COUNTING_FILE_LIST
         matchingcommand.h
         matchingcommand.cpp
         partition.hpp
-        partition.cpp        
+        partition.cpp
+        statistics.h
+        statistics.cpp        
         StudyPerformance.cpp
         types.h)
 
