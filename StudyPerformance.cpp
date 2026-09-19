@@ -9,6 +9,7 @@
 #include <fstream> 
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <mpi.h>
 
@@ -17,6 +18,7 @@
 #include "countingalgo.h"
 #include "analysis.h"
 #include "distributedcountingalgo.h"
+#include "statistics.h"
 
 // Sequential Square Count
 /*int main(int argc, char** argv){
@@ -61,8 +63,8 @@
 
     clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
-    graph->loadGraphFromFile(input_data_graph_file);
-    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    //graph->loadGraphFromFile(input_data_graph_file);
+    graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
     double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
 
 
@@ -127,7 +129,7 @@
 }*/
 
 
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -161,7 +163,7 @@
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}*/
+}
 
 
 
@@ -305,7 +307,7 @@
 }*/
 
 //Sequential Direction Based Square Count With Cut Edges for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -322,7 +324,35 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
+
+// Print Statistics
+/*int main (int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+
+    std::cout << "==================================================" << std::endl;
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+
+    std::cout << std::fixed << std::setprecision(2);
+
+    for(int i = 2; i < (argc - 1); i = i + 2){
+
+        std::string vertex_partition_file = argv[i];
+        std::string partition_count = argv[i + 1];
+        int partition_cnt = std::stoi(partition_count);
+
+        std::cout << "--------------------------------------------------------" << std::endl;
+        std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+        std::cout << "Partition Count : " << partition_count << std::endl;
+
+        Stats::printStatsOfPartitionedGraph(input_data_graph_file, vertex_partition_file, partition_cnt);             
+
+    }
+    
+    std::cout << "==================================================" << std::endl;
+
+}*/
 
 
 //Cut Graph Square Count for Multiple Partitions
