@@ -1583,6 +1583,102 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
 }
 
 
+void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt, const std::string& output_file_path){
+
+    std::ofstream outputfile;
+    outputfile.open(output_file_path, std::ios::app);
+
+    long long global_square_count = 0, local_square_count = 0, local_cut_edge_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0, four_ptn_sq_count = 0;
+    long long local_cut_graph_bfy_count = 0;
+    double cut_graph_four_ptn_sq_counting_time = 0.0;
+
+
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* interface_graph = new Graph();
+        interface_graph->loadPartitionedInterfaceGraphLatest(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* local_cut_graph = new Graph();
+        local_cut_graph->loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* global_cut_graph = new Graph();
+        global_cut_graph->loadCutGraphWithLocalCutEdges(file_path, vertex_partition_file_path, ptn_idx, local_cut_edge_list);
+
+        Graph* local_augmented_graph = new Graph();
+        local_graph->transformToAugmentedGraph(local_augmented_graph);        
+
+        clock_t counting_begin_clock = clock();
+        
+        clock_t local_count_begin_clock = clock();
+        local_square_count = db_count_square_in_local_graph(local_augmented_graph);
+        double local_graph_counting_time = (double(clock() - local_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t local_cut_count_begin_clock = clock();
+        local_cut_edge_square_count = count_square_from_other_ptn_per_vertex(local_graph);
+        double local_cut_graph_counting_time = (double(clock() - local_cut_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t ifc_count_begin_clock = clock();
+        local_interface_square_count = db_count_square_in_interface_graph_latest(interface_graph);
+        double ifc_graph_counting_time = (double(clock() - ifc_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        std::cout <<"Partition : " << ptn_idx << "Cut Graph Computation Started" << std::endl;
+        
+        clock_t local_cut_bfy_count_begin_clock = clock();
+        local_cut_graph_bfy_count = CountingAlgorithm::bfy_count_in_multi_partitions(local_cut_graph, ptn_idx); 
+        double cut_graph_bfy_counting_time = (double(clock() - local_cut_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        if(partition_cnt >= 4) {
+            clock_t cut_graph_four_ptn_sq_cnt_begin_clock = clock();
+            four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions(global_cut_graph, local_cut_edge_list); 
+            cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
+        }
+
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+        
+
+        outputfile << "===================================================================================" << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Edge Square Count - " << local_cut_edge_square_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Count - " << local_cut_graph_bfy_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Interface Square Count - " << local_interface_square_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Four Partition Square Count - " << four_ptn_sq_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Graph Counting Time - " << local_graph_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Counting Time - " << local_cut_graph_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time - " << cut_graph_bfy_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Interface Graph Counting Time - " << ifc_graph_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Four Partition Square Counting Time - " << cut_graph_four_ptn_sq_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Counting Time - " << counting_time << std::endl;
+        outputfile << "===================================================================================" << std::endl;
+
+        global_square_count += local_square_count;
+        global_square_count += local_cut_edge_square_count;
+        global_square_count += local_interface_square_count;
+        global_square_count += local_cut_graph_bfy_count;
+        global_square_count += four_ptn_sq_count;
+
+        local_graph->deleteAndClear();
+        interface_graph->deleteAndClear();
+        local_cut_graph->deleteAndClearForCutGraph();
+        global_cut_graph->deleteAndClearForCutGraph();
+        local_cut_edge_list.clear();
+    }
+
+    outputfile << "==============================================" << std::endl;
+    outputfile << "Partition Count : " << partition_cnt << "  --  Global Square Count : " << global_square_count << std::endl;
+    outputfile << "==============================================" << std::endl;
+
+    outputfile.close();
+
+}
+
+
+
 void CountingAlgorithm::print_db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long global_square_count = 0, local_square_count = 0, local_cut_edge_square_count = 0, local_interface_square_count = 0, cut_graph_square_count = 0, four_ptn_sq_count = 0;
