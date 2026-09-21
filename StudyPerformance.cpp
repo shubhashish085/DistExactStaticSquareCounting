@@ -20,8 +20,8 @@
 #include "distributedcountingalgo.h"
 #include "statistics.h"
 
-// Sequential Square Count
-/*int main(int argc, char** argv){
+// Sequential Square Count - Degree Based ID
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -45,7 +45,7 @@
     double total_time = input_read_time + transformation_time + counting_time;    
 
     std::cout << "==============================================" << std::endl;
-    std::cout << "Node Ordering - Only Vertex ID " << std::endl;
+    std::cout << "Node Ordering - Degree Based ID " << std::endl;
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
     std::cout << "Exact Square Count : " << exact_count << std::endl;    
     std::cout << "Input File Reading Time : " << input_read_time << " seconds" << std::endl;
@@ -54,7 +54,7 @@
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}*/
+}
 
 // Sequential Square Count - Random Ordering, K-coreness Ordering
 /*int main(int argc, char** argv){
@@ -327,7 +327,7 @@
 }*/
 
 
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -344,7 +344,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 // Print Statistics
 /*int main (int argc, char** argv){
