@@ -25,6 +25,8 @@
 # mpirun -np 64 ./DistExactStaticSquareCounting.out ./com-friendster.ungraph.txt 32_com-friendster.txt 64
 
 
-./DistExactStaticSquareCounting.out /home/kars1/Parallel_computation/dataset/com-friendster.ungraph.txt
+# ./DistExactStaticSquareCounting.out ../data/com-friendster.ungraph.txt
+
+mpirun -np 2 ./DistExactStaticSquareCounting.out ./com-lj.ungraph.txt 2_com-lj.txt 2 1
 
 
