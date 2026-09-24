@@ -3751,7 +3751,6 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
     }
 
     std::pair<VertexID, VertexID> edge;
-    VertexID begin_idx, end_idx;
 
     while (infile >> begin){
 
@@ -3760,25 +3759,10 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
         if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
             if(partition[begin] != partition[end]){
                 
-                if(vertex_idx_map.find(begin) == vertex_idx_map.end()){
-                    vertex_idx_map[begin] = vertices_count;
-                    vertices_count++;
-                }
-
-                if(vertex_idx_map.find(end) == vertex_idx_map.end()){
-                    vertex_idx_map[end] = vertices_count;
-                    vertices_count++;
-                }
-
-                begin_idx = vertex_idx_map[begin];
-                end_idx = vertex_idx_map[end];
 
                 if((begin < end) && (partition[begin] == partition_idx)){
-                    if(end_idx < begin_idx){
-                        edge = std::make_pair(end_idx, begin_idx);
-                    }else {
-                        edge = std::make_pair(begin_idx, end_idx);
-                    }
+                    
+                    edge = std::make_pair(begin, end);
                     local_cut_edges.push_back(edge);
 
                     if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
@@ -3791,12 +3775,8 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
                 }
                 
                 if((end < begin) &&  (partition[end] == partition_idx)){
-                    if(end_idx < begin_idx){
-                        edge = std::make_pair(end_idx, begin_idx);
-                    }else {
-                        edge = std::make_pair(begin_idx, end_idx);
-                    }
                     
+                    edge = std::make_pair(end, begin);                    
                     local_cut_edges.push_back(edge);
 
                     if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
@@ -3811,12 +3791,13 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
         }
     }
 
+    vertices_count = total_vertices_count;
+
     infile.close();
 
     std::ifstream input_file(file_path);
 
     degrees = new ui[vertices_count];
-    local_partition = new NodeID[vertices_count];
     offsets = new ui[vertices_count + 1];
     std::fill(degrees, degrees + vertices_count, 0);
 
@@ -3838,26 +3819,6 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
 
     edges_count = 0;
 
-    /*while (input_file >> begin){
-
-        input_file >> end;      
-
-        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
-
-            if(partition[begin] != partition[end]){
-                
-                begin_idx = vertex_idx_map[begin];
-                end_idx = vertex_idx_map[end]; 
-                degrees[begin_idx] += 1;
-                degrees[end_idx] += 1;
-                local_partition[begin_idx] = partition[begin];
-                local_partition[end_idx] = partition[end];
-                cut_edge_vtr.push_back(std::make_pair(begin_idx, end_idx));
-                edges_count++;
-            }
-        }
-    }*/
-
     while (input_file >> begin){
 
         input_file >> end;      
@@ -3866,13 +3827,9 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
 
             if(partition[begin] != partition[end]){
                 if((self_ptn_cut_vertex_map.find(begin) != self_ptn_cut_vertex_map.end()) || (self_ptn_cut_vertex_map.find(end) != self_ptn_cut_vertex_map.end())){
-                    begin_idx = vertex_idx_map[begin];
-                    end_idx = vertex_idx_map[end]; 
-                    degrees[begin_idx] += 1;
-                    degrees[end_idx] += 1;
-                    local_partition[begin_idx] = partition[begin];
-                    local_partition[end_idx] = partition[end];
-                    cut_edge_vtr.push_back(std::make_pair(begin_idx, end_idx));
+                    degrees[begin] += 1;
+                    degrees[end] += 1;
+                    cut_edge_vtr.push_back(std::make_pair(begin, end));
                     edges_count++;
                 }
             }
@@ -3906,8 +3863,6 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
 
         neighbors_offset[end] += 1;
     }
-
-    //std::cout << "Cut Graph : Neighbor Loading Finished" << std::endl;
 
     for (ui i = 0; i < vertices_count; ++i){
         std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);

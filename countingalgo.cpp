@@ -335,6 +335,43 @@ long long CountingAlgorithm::local_count_square_in_four_partitions(Graph* graph,
 }
 
 
+long long CountingAlgorithm::local_count_square_in_four_partitions_optimized(Graph* graph, std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list){
+
+    long long count = 0;
+    std::pair<VertexID, VertexID> edge;
+    
+    VertexID p, q, r, s;
+    NodeID p_ptn, q_ptn;
+    ui p_nbr_cnt = 0, q_nbr_cnt = 0, r_nbr_cnt = 0;
+    VertexID* p_nbrs, *q_nbrs, *r_nbrs;
+
+    for(ui i = 0; i < local_cut_edge_list.size(); i++){
+
+        edge = local_cut_edge_list[i];
+        p = edge.first;
+        q = edge.second;
+        p_ptn = graph->partition[p];
+        q_ptn = graph->partition[q];
+        p_nbrs = graph->getVertexNeighbors(p, p_nbr_cnt);
+        q_nbrs = graph->getVertexNeighbors(q, q_nbr_cnt);
+
+        for(VertexID k = 0; k < p_nbr_cnt; k++){
+            r = p_nbrs[k];
+            if(r <= q){
+                continue;
+            }
+            if(graph->partition[r] != q_ptn){
+                r_nbrs = graph->getVertexNeighbors(r, r_nbr_cnt);
+                count += modified_array_intersection(graph->partition, r_nbrs, r_nbr_cnt, q_nbrs, q_nbr_cnt, p, p_ptn);                    
+            }
+        }
+    }    
+
+    return count;
+}
+
+
+
 
 long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 
@@ -1630,7 +1667,7 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel_optimized(const 
 
         if(partition_cnt >= 4) {
             clock_t cut_graph_four_ptn_sq_cnt_begin_clock = clock();
-            four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions(global_cut_graph, local_cut_edge_list); 
+            four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions_optimized(global_cut_graph, local_cut_edge_list); 
             cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
         }
 
