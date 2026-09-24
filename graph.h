@@ -51,6 +51,7 @@ public:
     
     std::unordered_map<VertexID, VertexID> vertex_idx_map;
     std::unordered_map<VertexID, VertexID> other_ptn_vertex_idx_map;
+    std::unordered_map<VertexID, bool> self_ptn_cut_vertex_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map;
     std::map<std::pair<VertexID, VertexID>, ui> wedge_map_comm;
 
@@ -101,6 +102,7 @@ public:
     void loadPartitionedInterfaceGraphBidirectionLatest(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphWithLocalCutEdges(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx, std::vector<std::pair<VertexID, VertexID>>& local_cut_edges);
+    void loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx, std::vector<std::pair<VertexID, VertexID>>& local_cut_edges);    
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file_path);
 
