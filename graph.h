@@ -103,6 +103,8 @@ public:
     void loadCutGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphWithLocalCutEdges(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx, std::vector<std::pair<VertexID, VertexID>>& local_cut_edges);
     void loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx, std::vector<std::pair<VertexID, VertexID>>& local_cut_edges);    
+    void loadCutGraphWithLocalCutEdgesOptForRplFactor(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx);
+    void loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactor(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx);
     void loadCutGraphBidirection(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphFromCutEdgeFile(const std::string& file_path, const std::string& cut_edge_file_path);
 
@@ -118,6 +120,8 @@ public:
     void loadPartitionedInterfaceGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirectionOptimizedKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphBidirectionLatestKahip(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadCutGraphWithLocalCutEdgesOptForRplFactorKahip(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx);
+    void loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactorKahip(const std::string& file_path, const std::string& vtx_ptn_file, NodeID ptn_idx);
     void loadCutGraphFromFileKahip(const std::string& file_path, const std::string& vtx_ptn_file);
     void loadCutGraphBidirectionKahip(const std::string& file_path, const std::string& vtx_ptn_file);
 

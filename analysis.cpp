@@ -242,7 +242,7 @@ void Analysis::analyse_replication_factor(const std::string& file_path, const st
         ptn_vertices_count = local_graph->vertices_count + local_graph->ghost_vertices_count;
         global_vertics_count += ptn_vertices_count;
 
-        std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
+        //std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
     }
 
     Graph* cut_graph = new Graph();
@@ -250,6 +250,38 @@ void Analysis::analyse_replication_factor(const std::string& file_path, const st
 
     global_vertics_count += cut_graph->vertices_count;
     std::cout << "Cut Graph Vertices Count : " << cut_graph->vertices_count << std::endl;
+    std::cout << "Global Vertices Count : " << global_vertics_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+void Analysis::analyse_replication_factor_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_vertics_count = 0, ptn_vertices_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
+
+    
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list;
+
+        ptn_vertices_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesOptForRplFactor(file_path, vertex_partition_file_path, ptn_idx);
+
+
+        ptn_vertices_count = local_graph->vertices_count + local_graph->ghost_vertices_count;
+        global_vertics_count += ptn_vertices_count;
+        global_vertics_count += (cut_graph->ghost_vertex_idx_map).size();
+
+        //std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
+    }
+
     std::cout << "Global Vertices Count : " << global_vertics_count << std::endl;
     std::cout << "==========================================================" << std::endl;
 
@@ -286,6 +318,35 @@ void Analysis::analyse_replication_factor_kahip(const std::string& file_path, co
 
 
 
+void Analysis::analyse_replication_factor_kahip_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_vertics_count = 0, ptn_vertices_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_vertices_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFileKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_grah = new Graph();
+        cut_grah->loadCutGraphWithLocalCutEdgesOptForRplFactorKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_vertices_count = local_graph->vertices_count + local_graph->ghost_vertices_count;
+        global_vertics_count += ptn_vertices_count;
+        global_vertics_count += (cut_grah->ghost_vertex_idx_map).size();
+
+        std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
+    }
+
+    std::cout << "Global Vertices Count : " << global_vertics_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+
+
 void Analysis::analyse_edge_replication_factor(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long actual_vertices_count = 0, global_edges_count = 0, ptn_edges_count = 0;
@@ -301,7 +362,7 @@ void Analysis::analyse_edge_replication_factor(const std::string& file_path, con
         ptn_edges_count = (local_graph->edges_count * 2) + local_graph->cut_edges_count + local_graph->other_ptn_edges_count;
         global_edges_count += ptn_edges_count;
 
-        std::cout << "Partition : " << ptn_idx << " - Edges Count : " << ptn_edges_count << std::endl;
+        //std::cout << "Partition : " << ptn_idx << " - Edges Count : " << ptn_edges_count << std::endl;
     }
 
     Graph* cut_graph = new Graph();
@@ -309,6 +370,34 @@ void Analysis::analyse_edge_replication_factor(const std::string& file_path, con
 
     global_edges_count += cut_graph->edges_count;
     std::cout << "Cut Graph Edges Count : " << cut_graph->edges_count << std::endl;
+    std::cout << "Global Edges Count : " << global_edges_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+
+void Analysis::analyse_edge_replication_factor_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_edges_count = 0, ptn_edges_count = 0;
+    double edge_replication_factor = 0.0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_edges_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesOptForRplFactor(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_edges_count = (local_graph->edges_count * 2) + local_graph->cut_edges_count + local_graph->other_ptn_edges_count;
+        global_edges_count += ptn_edges_count;
+        global_edges_count += (cut_graph->other_ptn_edges_count) * 2;
+
+        //std::cout << "Partition : " << ptn_idx << " - Edges Count : " << ptn_edges_count << std::endl;
+    }
+
     std::cout << "Global Edges Count : " << global_edges_count << std::endl;
     std::cout << "==========================================================" << std::endl;
 
@@ -344,6 +433,34 @@ void Analysis::analyse_edge_replication_factor_kahip(const std::string& file_pat
 }
 
 
+void Analysis::analyse_edge_replication_factor_kahip_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_edges_count = 0, ptn_edges_count = 0;
+    double edge_replication_factor = 0.0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_edges_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesFromFileKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesOptForRplFactorKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_edges_count = (local_graph->edges_count * 2) + local_graph->cut_edges_count + (local_graph->other_ptn_edges_count);
+        global_edges_count += ptn_edges_count;
+        global_edges_count += (cut_graph->other_ptn_edges_count) * 2;
+
+        std::cout << "Partition : " << ptn_idx << " - Edges Count : " << ptn_edges_count << std::endl;
+    }
+
+    std::cout << "Global Edges Count : " << global_edges_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+
 void Analysis::analyse_replication_factor_for_bidirectional_edges(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long actual_vertices_count = 0, global_vertics_count = 0, ptn_vertices_count = 0;
@@ -373,6 +490,34 @@ void Analysis::analyse_replication_factor_for_bidirectional_edges(const std::str
 }
 
 
+void Analysis::analyse_replication_factor_for_bidirectional_edges_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_vertics_count = 0, ptn_vertices_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_vertices_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesBidirection(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactor(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_vertices_count = local_graph->vertices_count + local_graph->ghost_vertices_count;
+        global_vertics_count += ptn_vertices_count;
+        global_vertics_count += (cut_graph->ghost_vertex_idx_map).size();
+
+        std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
+    }
+
+    std::cout << "Global Vertices Count : " << global_vertics_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+
 void Analysis::analyse_replication_factor_for_bidirectional_edges_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long actual_vertices_count = 0, global_vertics_count = 0, ptn_vertices_count = 0;
@@ -385,17 +530,44 @@ void Analysis::analyse_replication_factor_for_bidirectional_edges_kahip(const st
         Graph* local_graph = new Graph();
         local_graph->loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(file_path, vertex_partition_file_path, ptn_idx);
 
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactorKahip(file_path, vertex_partition_file_path, ptn_idx);
+
         ptn_vertices_count = local_graph->vertices_count + local_graph->ghost_vertices_count;
         global_vertics_count += ptn_vertices_count;
+        global_vertics_count += (cut_graph->ghost_vertex_idx_map).size();
 
         std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
     }
 
-    Graph* cut_graph = new Graph();
-    cut_graph->loadCutGraphBidirectionKahip(file_path, vertex_partition_file_path);
+    std::cout << "Global Vertices Count : " << global_vertics_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
 
-    global_vertics_count += cut_graph->vertices_count;
-    std::cout << "Cut Graph Vertices Count : " << cut_graph->vertices_count << std::endl;
+}
+
+
+void Analysis::analyse_replication_factor_for_bidirectional_edges_kahip_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_vertics_count = 0, ptn_vertices_count = 0;
+    long long deductible_count = 0, three_ptn_deductible_count = 0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_vertices_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactorKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_vertices_count = local_graph->vertices_count + local_graph->ghost_vertices_count;
+        global_vertics_count += ptn_vertices_count;
+        global_vertics_count += (cut_graph->ghost_vertex_idx_map).size();
+
+        std::cout << "Partition : " << ptn_idx << " - Vertices Count : " << ptn_vertices_count << std::endl;
+    }
+
     std::cout << "Global Vertices Count : " << global_vertics_count << std::endl;
     std::cout << "==========================================================" << std::endl;
 
@@ -431,6 +603,34 @@ void Analysis::analyse_edge_replication_factor_for_bidirectional_edges(const std
 }
 
 
+void Analysis::analyse_edge_replication_factor_for_bidirectional_edges_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_edges_count = 0, ptn_edges_count = 0;
+    double edge_replication_factor = 0.0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_edges_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesBidirection(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactor(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_edges_count = (local_graph->edges_count) + (local_graph->cut_edges_count / 2) + (local_graph->other_ptn_edges_count);
+        global_edges_count += ptn_edges_count;
+        global_edges_count += (cut_graph-> other_ptn_edges_count) * 2;
+
+        std::cout << "Partition : " << ptn_idx << " - Edges Count : " << ptn_edges_count << std::endl;
+    }
+
+    std::cout << "Global Edges Count : " << global_edges_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+
 void Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
     long long actual_vertices_count = 0, global_edges_count = 0, ptn_edges_count = 0;
@@ -454,6 +654,33 @@ void Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip(con
 
     global_edges_count += (cut_graph->edges_count / 2);
     std::cout << "Cut Graph Edges Count : " << cut_graph->edges_count << std::endl;
+    std::cout << "Global Edges Count : " << global_edges_count << std::endl;
+    std::cout << "==========================================================" << std::endl;
+
+}
+
+void Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long actual_vertices_count = 0, global_edges_count = 0, ptn_edges_count = 0;
+    double edge_replication_factor = 0.0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        ptn_edges_count = 0;
+
+        Graph* local_graph = new Graph();
+        local_graph->loadPartitionedLocalGraphWoCutEdgesBidirectionKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* cut_graph = new Graph();
+        cut_graph->loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactorKahip(file_path, vertex_partition_file_path, ptn_idx);
+
+        ptn_edges_count = (local_graph->edges_count) + (local_graph->cut_edges_count / 2) + (local_graph->other_ptn_edges_count);
+        global_edges_count += ptn_edges_count;
+        global_edges_count += (cut_graph-> other_ptn_edges_count) * 2;
+
+        std::cout << "Partition : " << ptn_idx << " - Edges Count : " << ptn_edges_count << std::endl;
+    }
+
     std::cout << "Global Edges Count : " << global_edges_count << std::endl;
     std::cout << "==========================================================" << std::endl;
 

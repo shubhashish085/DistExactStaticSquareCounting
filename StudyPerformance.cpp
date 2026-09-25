@@ -307,7 +307,7 @@
 }*/
 
 //Sequential Direction Based Square Count With Cut Edges for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -325,7 +325,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 
 /*int main(int argc, char** argv){
@@ -709,7 +709,7 @@ int main(int argc, char** argv){
 }*/
 
 // Replication Factor
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -717,14 +717,18 @@ int main(int argc, char** argv){
 
     int partition_cnt = std::stoi(partition_count);
 
-    std::cout << "=============================================================" << std::endl; 
+    std::cout << "=============================================================" << std::endl;
+    std::cout << "SQRD : Replication Factor" << input_data_graph_file << std::endl; 
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    //Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
-    Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
-}*/
+    Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    //Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    //Analysis::analyse_replication_factor_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
+    //Analysis::analyse_edge_replication_factor_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
+}
 
 // Replication Factor - KaHIP
 /*int main(int argc, char** argv){
@@ -741,7 +745,10 @@ int main(int argc, char** argv){
     std::cout << "Partition Count : " << partition_count << std::endl;
 
     //Analysis::analyse_replication_factor_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
-    Analysis::analyse_edge_replication_factor_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    // Analysis::analyse_edge_replication_factor_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    //Analysis::analyse_replication_factor_kahip_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);
+    Analysis::analyse_edge_replication_factor_kahip_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
 }*/
 
 
@@ -760,7 +767,10 @@ int main(int argc, char** argv){
     std::cout << "Partition Count : " << partition_count << std::endl;
 
     //Analysis::analyse_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
-    Analysis::analyse_edge_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    //Analysis::analyse_edge_replication_factor_for_bidirectional_edges(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    //Analysis::analyse_replication_factor_for_bidirectional_edges_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);
+    Analysis::analyse_edge_replication_factor_for_bidirectional_edges_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
 }*/
 
 // Replication Factor For Bidirectional Edges - KaHIP
@@ -778,7 +788,9 @@ int main(int argc, char** argv){
     std::cout << "Partition Count : " << partition_count << std::endl;
 
     //Analysis::analyse_replication_factor_for_bidirectional_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
-    Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    //Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip(input_data_graph_file, vertex_partition_file, partition_cnt);
+    //Analysis::analyse_replication_factor_for_bidirectional_edges_kahip_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);
+    Analysis::analyse_edge_replication_factor_for_bidirectional_edges_kahip_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
 }*/
 
 

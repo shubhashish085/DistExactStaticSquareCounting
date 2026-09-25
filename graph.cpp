@@ -3831,11 +3831,722 @@ void Graph::loadCutGraphWithLocalCutEdgesOptimized(const std::string& file_path,
                     degrees[end] += 1;
                     cut_edge_vtr.push_back(std::make_pair(begin, end));
                     edges_count++;
+
                 }
             }
         }
     }
    
+
+    input_file.close();
+    
+    offsets[0] = 0;
+    neighbors = new VertexID[edges_count * 2];
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+
+    for (VertexID i = 0; i < vertices_count; i++){
+        offsets[i + 1] = offsets[i] + degrees[i];
+    }
+
+    for(ui i = 0; i < cut_edge_vtr.size(); i++){
+
+        begin = cut_edge_vtr[i].first;
+        end = cut_edge_vtr[i].second;
+
+        offset = offsets[begin] + neighbors_offset[begin];
+        neighbors[offset] = end;
+
+        neighbors_offset[begin] += 1;
+
+        offset = offsets[end] + neighbors_offset[end];
+        neighbors[offset] = begin;
+
+        neighbors_offset[end] += 1;
+    }
+
+    for (ui i = 0; i < vertices_count; ++i){
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
+    }
+}
+
+
+void Graph::loadCutGraphWithLocalCutEdgesOptForRplFactor(const std::string& file_path, const std::string& vtx_ptn_file_path, NodeID partition_idx)
+{
+
+    NodeID partition_id;
+    VertexID vertex_id;
+    bool contains_in_partition = false;
+
+    std::ifstream vertex_partition_file(vtx_ptn_file_path);
+    std::ifstream infile(file_path);
+
+    if (!vertex_partition_file.is_open() || !infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << vtx_ptn_file_path << " or " << file_path << "." << std::endl;
+        exit(-1);
+    }
+
+    ui total_vertices_count = 0;
+
+    while (vertex_partition_file >> vertex_id){
+
+        vertex_partition_file >> partition_id;
+        total_vertices_count++;
+    }
+
+    vertex_partition_file.close();
+
+    std::ifstream vtx_ptn_file(vtx_ptn_file_path);
+
+    partition = new NodeID[total_vertices_count];
+
+    while (vtx_ptn_file >> vertex_id)
+    {
+        vtx_ptn_file >> partition_id;
+        partition[vertex_id] = partition_id;
+    }
+
+    vtx_ptn_file.close();
+
+    vertices_count = 0;
+    vertex_idx_map.clear();
+
+    //std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
+
+    ui line_count = 0, comment_line_count = 4;
+    VertexID begin, end;
+    std::string input_line;
+
+    while (std::getline(infile, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    std::pair<VertexID, VertexID> edge;
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if(partition[begin] != partition[end]){
+                
+                if((begin < end) && (partition[begin] == partition_idx)){
+                    
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[begin] = true;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[end] = true;
+                    }
+                }
+                
+                if((end < begin) &&  (partition[end] == partition_idx)){
+
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[begin] = true;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[end] = true;
+                    }
+                }                
+            }
+        }
+    }
+
+    vertices_count = total_vertices_count;
+
+    infile.close();
+
+    std::ifstream input_file(file_path);
+
+    degrees = new ui[vertices_count];
+    offsets = new ui[vertices_count + 1];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
+
+    ui  offset;
+    line_count = 0, comment_line_count = 4;
+
+    while (std::getline(input_file, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    edges_count = 0;
+    other_ptn_edges_count = 0;
+
+    while (input_file >> begin){
+
+        input_file >> end;      
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+
+            if(partition[begin] != partition[end]){
+                if((self_ptn_cut_vertex_map.find(begin) != self_ptn_cut_vertex_map.end()) || (self_ptn_cut_vertex_map.find(end) != self_ptn_cut_vertex_map.end())){
+                    degrees[begin] += 1;
+                    degrees[end] += 1;
+                    cut_edge_vtr.push_back(std::make_pair(begin, end));
+                    edges_count++;
+
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[begin] = 1;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[end] = 1;
+                    }
+
+                    if((partition[begin] != partition_idx) &&  (partition[end] != partition_idx)){
+                        other_ptn_edges_count++;
+                    }                
+                }
+            }
+        }
+    }   
+
+    input_file.close();
+    
+    offsets[0] = 0;
+    neighbors = new VertexID[edges_count * 2];
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+
+    for (VertexID i = 0; i < vertices_count; i++){
+        offsets[i + 1] = offsets[i] + degrees[i];
+    }
+
+    for(ui i = 0; i < cut_edge_vtr.size(); i++){
+
+        begin = cut_edge_vtr[i].first;
+        end = cut_edge_vtr[i].second;
+
+        offset = offsets[begin] + neighbors_offset[begin];
+        neighbors[offset] = end;
+
+        neighbors_offset[begin] += 1;
+
+        offset = offsets[end] + neighbors_offset[end];
+        neighbors[offset] = begin;
+
+        neighbors_offset[end] += 1;
+    }
+
+    for (ui i = 0; i < vertices_count; ++i){
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
+    }
+}
+
+
+void Graph::loadCutGraphWithLocalCutEdgesOptForRplFactorKahip(const std::string& file_path, const std::string& vtx_ptn_file_path, NodeID partition_idx)
+{
+
+    NodeID partition_id;
+    VertexID vertex_id;
+    bool contains_in_partition = false;
+
+    std::ifstream vertex_partition_file(vtx_ptn_file_path);
+    std::ifstream infile(file_path);
+
+    if (!vertex_partition_file.is_open() || !infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << vtx_ptn_file_path << " or " << file_path << "." << std::endl;
+        exit(-1);
+    }
+
+    ui total_vertices_count = 0;
+
+    while (vertex_partition_file >> partition_id){
+        total_vertices_count++;
+    }
+
+    vertex_partition_file.close();
+
+    std::ifstream vtx_ptn_file(vtx_ptn_file_path);
+
+    partition = new NodeID[total_vertices_count];
+
+    vertex_id = 0;
+    while (vtx_ptn_file >> partition_id){
+        partition[vertex_id] = partition_id;
+        vertex_id++;
+    }
+
+    vtx_ptn_file.close();
+
+    vertices_count = 0;
+    vertex_idx_map.clear();
+
+    //std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
+
+    ui line_count = 0, comment_line_count = 4;
+    VertexID begin, end;
+    std::string input_line;
+
+    while (std::getline(infile, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    std::pair<VertexID, VertexID> edge;
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if(partition[begin] != partition[end]){
+                
+                if((begin < end) && (partition[begin] == partition_idx)){
+                    
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[begin] = true;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[end] = true;
+                    }
+                }
+                
+                if((end < begin) &&  (partition[end] == partition_idx)){
+
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[begin] = true;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[end] = true;
+                    }
+                }                
+            }
+        }
+    }
+
+    vertices_count = total_vertices_count;
+
+    infile.close();
+
+    std::ifstream input_file(file_path);
+
+    degrees = new ui[vertices_count];
+    offsets = new ui[vertices_count + 1];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
+
+    ui  offset;
+    line_count = 0, comment_line_count = 4;
+
+    while (std::getline(input_file, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    edges_count = 0;
+    other_ptn_edges_count = 0;
+
+    while (input_file >> begin){
+
+        input_file >> end;      
+
+        if ((begin != end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+
+            if(partition[begin] != partition[end]){
+                if((self_ptn_cut_vertex_map.find(begin) != self_ptn_cut_vertex_map.end()) || (self_ptn_cut_vertex_map.find(end) != self_ptn_cut_vertex_map.end())){
+                    degrees[begin] += 1;
+                    degrees[end] += 1;
+                    cut_edge_vtr.push_back(std::make_pair(begin, end));
+                    edges_count++;
+
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[begin] = 1;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[end] = 1;
+                    }
+
+                    if((partition[begin] != partition_idx) &&  (partition[end] != partition_idx)){
+                        other_ptn_edges_count++;
+                    }                  
+                }
+            }
+        }
+    }   
+
+    input_file.close();
+    
+    offsets[0] = 0;
+    neighbors = new VertexID[edges_count * 2];
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+
+    for (VertexID i = 0; i < vertices_count; i++){
+        offsets[i + 1] = offsets[i] + degrees[i];
+    }
+
+    for(ui i = 0; i < cut_edge_vtr.size(); i++){
+
+        begin = cut_edge_vtr[i].first;
+        end = cut_edge_vtr[i].second;
+
+        offset = offsets[begin] + neighbors_offset[begin];
+        neighbors[offset] = end;
+
+        neighbors_offset[begin] += 1;
+
+        offset = offsets[end] + neighbors_offset[end];
+        neighbors[offset] = begin;
+
+        neighbors_offset[end] += 1;
+    }
+
+    for (ui i = 0; i < vertices_count; ++i){
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
+    }
+}
+
+
+
+void Graph::loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactor(const std::string& file_path, const std::string& vtx_ptn_file_path, NodeID partition_idx)
+{
+
+    NodeID partition_id;
+    VertexID vertex_id;
+    bool contains_in_partition = false;
+
+    std::ifstream vertex_partition_file(vtx_ptn_file_path);
+    std::ifstream infile(file_path);
+
+    if (!vertex_partition_file.is_open() || !infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << vtx_ptn_file_path << " or " << file_path << "." << std::endl;
+        exit(-1);
+    }
+
+    ui total_vertices_count = 0;
+
+    while (vertex_partition_file >> vertex_id){
+
+        vertex_partition_file >> partition_id;
+        total_vertices_count++;
+    }
+
+    vertex_partition_file.close();
+
+    std::ifstream vtx_ptn_file(vtx_ptn_file_path);
+
+    partition = new NodeID[total_vertices_count];
+
+    while (vtx_ptn_file >> vertex_id)
+    {
+        vtx_ptn_file >> partition_id;
+        partition[vertex_id] = partition_id;
+    }
+
+    vtx_ptn_file.close();
+
+    vertices_count = 0;
+    vertex_idx_map.clear();
+
+    //std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
+
+    ui line_count = 0, comment_line_count = 4;
+    VertexID begin, end;
+    std::string input_line;
+
+    while (std::getline(infile, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    std::pair<VertexID, VertexID> edge;
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if ((begin < end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if(partition[begin] != partition[end]){
+                
+                if((partition[begin] == partition_idx)){
+                    
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[begin] = true;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[end] = true;
+                    }
+                }
+                                
+            }
+        }
+    }
+
+    vertices_count = total_vertices_count;
+
+    infile.close();
+
+    std::ifstream input_file(file_path);
+
+    degrees = new ui[vertices_count];
+    offsets = new ui[vertices_count + 1];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
+
+    ui  offset;
+    line_count = 0, comment_line_count = 4;
+
+    while (std::getline(input_file, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    edges_count = 0;
+    other_ptn_edges_count = 0;
+
+    while (input_file >> begin){
+
+        input_file >> end;      
+
+        if ((begin < end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+
+            if(partition[begin] != partition[end]){
+                if((self_ptn_cut_vertex_map.find(begin) != self_ptn_cut_vertex_map.end()) || (self_ptn_cut_vertex_map.find(end) != self_ptn_cut_vertex_map.end())){
+                    degrees[begin] += 1;
+                    degrees[end] += 1;
+                    cut_edge_vtr.push_back(std::make_pair(begin, end));
+                    edges_count++;
+
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[begin] = 1;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[end] = 1;
+                    }
+
+                    if((partition[begin] != partition_idx) &&  (partition[end] != partition_idx)){
+                        other_ptn_edges_count++;
+                    }
+                }
+            }
+        }
+    }   
+
+    input_file.close();
+    
+    offsets[0] = 0;
+    neighbors = new VertexID[edges_count * 2];
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+
+    for (VertexID i = 0; i < vertices_count; i++){
+        offsets[i + 1] = offsets[i] + degrees[i];
+    }
+
+    for(ui i = 0; i < cut_edge_vtr.size(); i++){
+
+        begin = cut_edge_vtr[i].first;
+        end = cut_edge_vtr[i].second;
+
+        offset = offsets[begin] + neighbors_offset[begin];
+        neighbors[offset] = end;
+
+        neighbors_offset[begin] += 1;
+
+        offset = offsets[end] + neighbors_offset[end];
+        neighbors[offset] = begin;
+
+        neighbors_offset[end] += 1;
+    }
+
+    for (ui i = 0; i < vertices_count; ++i){
+        std::sort(neighbors + offsets[i], neighbors + offsets[i + 1]);
+    }
+}
+
+
+void Graph::loadCutGraphWithLocalCutEdgesBiEdgesOptForRplFactorKahip(const std::string& file_path, const std::string& vtx_ptn_file_path, NodeID partition_idx)
+{
+
+    NodeID partition_id;
+    VertexID vertex_id;
+    bool contains_in_partition = false;
+
+    std::ifstream vertex_partition_file(vtx_ptn_file_path);
+    std::ifstream infile(file_path);
+
+    if (!vertex_partition_file.is_open() || !infile.is_open())
+    {
+        std::cout << "Can not open the graph file " << vtx_ptn_file_path << " or " << file_path << "." << std::endl;
+        exit(-1);
+    }
+
+    ui total_vertices_count = 0;
+
+    while (vertex_partition_file >> partition_id){
+        total_vertices_count++;
+    }
+
+    vertex_partition_file.close();
+
+    std::ifstream vtx_ptn_file(vtx_ptn_file_path);
+
+    partition = new NodeID[total_vertices_count];
+
+    vertex_id = 0;
+    while (vtx_ptn_file >> partition_id)
+    {
+        partition[vertex_id] = partition_id;
+        vertex_id++;
+    }
+
+    vtx_ptn_file.close();
+
+    vertices_count = 0;
+    vertex_idx_map.clear();
+
+    //std::cout << "Cut Graph - Partition Graph Loading Finished" << std::endl;
+
+    ui line_count = 0, comment_line_count = 4;
+    VertexID begin, end;
+    std::string input_line;
+
+    while (std::getline(infile, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    std::pair<VertexID, VertexID> edge;
+
+    while (infile >> begin){
+
+        infile >> end;
+
+        if ((begin < end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+            if(partition[begin] != partition[end]){
+                
+                if((partition[begin] == partition_idx)){
+                    
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[begin] = true;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        self_ptn_cut_vertex_map[end] = true;
+                    }
+                }
+                                
+            }
+        }
+    }
+
+    vertices_count = total_vertices_count;
+
+    infile.close();
+
+    std::ifstream input_file(file_path);
+
+    degrees = new ui[vertices_count];
+    offsets = new ui[vertices_count + 1];
+    std::fill(degrees, degrees + vertices_count, 0);
+
+    std::vector<std::pair<VertexID, VertexID>> cut_edge_vtr;
+
+    ui  offset;
+    line_count = 0, comment_line_count = 4;
+
+    while (std::getline(input_file, input_line)){
+
+        if (input_line.rfind("#", 0) == 0){
+            line_count++;
+        }
+
+        if (line_count >= comment_line_count){
+            break;
+        }
+    }
+
+    edges_count = 0;
+    other_ptn_edges_count = 0;
+
+    while (input_file >> begin){
+
+        input_file >> end;      
+
+        if ((begin < end) && (begin < total_vertices_count) && (end < total_vertices_count)){
+
+            if(partition[begin] != partition[end]){
+                if((self_ptn_cut_vertex_map.find(begin) != self_ptn_cut_vertex_map.end()) || (self_ptn_cut_vertex_map.find(end) != self_ptn_cut_vertex_map.end())){
+                    degrees[begin] += 1;
+                    degrees[end] += 1;
+                    cut_edge_vtr.push_back(std::make_pair(begin, end));
+                    edges_count++;
+
+                    if(self_ptn_cut_vertex_map.find(begin) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[begin] = 1;
+                    }
+
+                    if(self_ptn_cut_vertex_map.find(end) == self_ptn_cut_vertex_map.end()){
+                        ghost_vertex_idx_map[end] = 1;
+                    }
+
+                    if((partition[begin] != partition_idx) &&  (partition[end] != partition_idx)){
+                        other_ptn_edges_count++;
+                    }
+                }
+            }
+        }
+    }   
 
     input_file.close();
     
