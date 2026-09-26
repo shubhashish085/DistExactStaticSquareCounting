@@ -48,6 +48,8 @@ public:
 
     ui* ptn_wise_nbr_cnt;
     VertexID** ptn_nbr_array;
+
+    bool left_for_bipartite_graph;
     
     std::unordered_map<VertexID, VertexID> vertex_idx_map;
     std::unordered_map<VertexID, VertexID> other_ptn_vertex_idx_map;
@@ -68,6 +70,7 @@ public:
         edges_count = 0;
         max_degree = 0;
         other_ptn_edges_count = 0;
+        left_for_bipartite_graph = true;
 
         offsets = NULL;
         neighbors = NULL;
@@ -93,6 +96,7 @@ public:
     void loadPartitionedLocalGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWoCutEdgesFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
+    void loadPartitionedLocalGraphWithOnlyCutEdgesForBipartiteGraph(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedLocalGraphWoCutEdgesBidirection(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphFromFile(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
     void loadPartitionedInterfaceGraphOptimized(const std::string& file_path, const std::string& vtx_ptn_file, int partition_no);
@@ -313,6 +317,21 @@ public:
 
         delete[] offsets;
         delete[] neighbors;
+        
+        vertex_idx_map.clear();
+        wedge_map.clear();
+        other_ptn_vertex_idx_map.clear();
+        interface_edges.clear();
+        other_ptn_edges.clear();
+        other_ptn_edge_list.clear();
+    }
+
+    void deleteAndClearForCutGraphForBipartite(){
+
+        delete[] offsets;
+        delete[] neighbors;
+        delete[] ghost_offsets;
+        delete[] ghost_neighbors;
         
         vertex_idx_map.clear();
         wedge_map.clear();

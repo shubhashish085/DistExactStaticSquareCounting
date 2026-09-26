@@ -890,3 +890,45 @@ void Analysis::analyse_cut_edges_for_both_direction_edges (const std::string& fi
 }
 
 
+void Analysis::compare_bfy_cnt_in_multiple_partitions(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long local_cut_graph_bfy_count = 0, local_cut_graph_bfy_count_bp = 0;
+    double cut_graph_four_ptn_sq_counting_time = 0.0;
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){        
+
+        Graph* local_cut_graph = new Graph();
+        local_cut_graph->loadPartitionedLocalGraphWithOnlyCutEdgesFromFile(file_path, vertex_partition_file_path, ptn_idx);
+      
+        Graph* local_cut_graph_bipartite = new Graph();
+        local_cut_graph_bipartite->loadPartitionedLocalGraphWithOnlyCutEdgesForBipartiteGraph(file_path, vertex_partition_file_path, ptn_idx);
+
+        clock_t counting_begin_clock = clock();
+
+        std::cout << "Cut Graph Computation Started" << std::endl;
+        
+        clock_t local_cut_bfy_count_begin_clock = clock();
+        local_cut_graph_bfy_count = CountingAlgorithm::bfy_count_in_multi_partitions(local_cut_graph, ptn_idx); 
+        double cut_graph_bfy_counting_time = (double(clock() - local_cut_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        clock_t local_cut_bp_bfy_count_begin_clock = clock();
+        local_cut_graph_bfy_count_bp = CountingAlgorithm::bfy_count_in_multi_ptns_from_bipartite_graph(local_cut_graph_bipartite, ptn_idx); 
+        double cut_graph_bp_bfy_counting_time = (double(clock() - local_cut_bp_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
+               
+
+        std::cout << "===================================================================================" << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Count      - " << local_cut_graph_bfy_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Count (BP) - " << local_cut_graph_bfy_count_bp << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time      - " << cut_graph_bfy_counting_time << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time (BP) - " << cut_graph_bp_bfy_counting_time << std::endl;
+        std::cout << "===================================================================================" << std::endl;
+
+
+        local_cut_graph->deleteAndClearForCutGraph();
+        local_cut_graph_bipartite->deleteAndClearForCutGraphForBipartite();
+    }
+
+}
+
+
+

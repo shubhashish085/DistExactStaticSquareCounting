@@ -265,6 +265,81 @@ long long CountingAlgorithm::bfy_count_in_multi_partitions(Graph* graph, int par
     return count;
 }
 
+
+long long CountingAlgorithm::bfy_count_in_multi_ptns_from_bipartite_graph(Graph* graph, int partition_no){
+
+    long long count = 0;
+    std::map<VertexID, VertexID> wedge_map;
+    std::pair<VertexID, VertexID> search_pair;
+    
+    VertexID w;
+    NodeID v1_ptn, v2_ptn; 
+    ui nbrs_1_cnt = 0, g_nbr_cnt = 0, wedge_cnt;
+    VertexID* nbrs, *g_nbrs;
+    
+    if(graph->left_for_bipartite_graph){
+
+        for(VertexID i = 0; i < graph->vertices_count; i++){
+            wedge_map.clear();
+            nbrs = graph->getVertexNeighbors(i, nbrs_1_cnt);
+            for(VertexID j = 0; j < nbrs_1_cnt; j++){
+                g_nbrs = graph->getVertexGhostNeighbors(nbrs[j], g_nbr_cnt);
+                for(VertexID k = 0; k < g_nbr_cnt; k++){
+                    w = g_nbrs[k];
+                    if(w > i){
+                        auto search = wedge_map.find(g_nbrs[k]);
+                        if(search == wedge_map.end()){
+                            wedge_map[w] = 1;
+                        }else {
+                            wedge_map[w] = wedge_map[w] + 1;
+                        }
+                    }
+                }
+            }
+
+            for (const auto& pair : wedge_map) {
+                wedge_cnt = pair.second;
+                if(wedge_cnt >= 2){
+                    count += (wedge_cnt * (wedge_cnt - 1) / 2);
+                }                 
+            }        
+        }
+
+    }else {
+        
+        for(VertexID i = 0; i < graph->ghost_vertices_count; i++){
+            wedge_map.clear();
+            g_nbrs = graph->getVertexGhostNeighbors(i, g_nbr_cnt);
+            for(VertexID j = 0; j < g_nbr_cnt; j++){
+                nbrs = graph->getVertexNeighbors(g_nbrs[j], nbrs_1_cnt);
+                for(VertexID k = 0; k < nbrs_1_cnt; k++){
+                    w = nbrs[k];
+                    if(w > i){
+                        auto search = wedge_map.find(nbrs[k]);
+                        if(search == wedge_map.end()){
+                            wedge_map[w] = 1;
+                        }else {
+                            wedge_map[w] = wedge_map[w] + 1;
+                        }
+                    }
+                }
+            }
+
+            for (const auto& pair : wedge_map) {
+                wedge_cnt = pair.second;
+                if(wedge_cnt >= 2){
+                    count += (wedge_cnt * (wedge_cnt - 1) / 2);
+                }                 
+            }        
+        }
+    }
+    
+
+    return count;
+}
+
+
+
 long long CountingAlgorithm::count_square_in_four_partitions(Graph* graph){
 
     long long count = 0;

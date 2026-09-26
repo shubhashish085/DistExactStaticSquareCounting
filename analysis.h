@@ -45,6 +45,8 @@ public:
 
     static void print_detailed_statistics(Graph* graph, int ptn_idx, double* time_array, long long square_count);
 
+    static void compare_bfy_cnt_in_multiple_partitions(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+
 };
 
 

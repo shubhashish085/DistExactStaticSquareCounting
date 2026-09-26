@@ -327,6 +327,25 @@
 
 }*/
 
+//Comparison of BFY counting
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    Analysis::compare_bfy_cnt_in_multiple_partitions(input_data_graph_file, vertex_partition_file, partition_cnt);     
+
+    std::cout << "==================================================" << std::endl;
+
+}
+
 
 /*int main(int argc, char** argv){
 
@@ -709,7 +728,7 @@
 }*/
 
 // Replication Factor
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -723,12 +742,12 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
+    //Analysis::analyse_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);  
     //Analysis::analyse_edge_replication_factor(input_data_graph_file, vertex_partition_file, partition_cnt);
 
     //Analysis::analyse_replication_factor_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
     //Analysis::analyse_edge_replication_factor_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);    
-}
+}*/
 
 // Replication Factor - KaHIP
 /*int main(int argc, char** argv){

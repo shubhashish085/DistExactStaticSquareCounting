@@ -50,6 +50,7 @@ public:
     static long long bfy_count_in_two_partition(Graph* graph, int l_ptn, int u_ptn);
     static long long bfy_count_in_three_partition(Graph* graph, int partition_count, int partition_no);
     static long long bfy_count_in_multi_partitions(Graph* graph, int partition_no);
+    static long long bfy_count_in_multi_ptns_from_bipartite_graph(Graph* graph, int partition_no);
     static long long count_square_in_four_partitions(Graph* graph);
     static long long local_count_square_in_four_partitions(Graph* graph, std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list);
     static long long local_count_square_in_four_partitions_optimized(Graph* graph, std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list);
