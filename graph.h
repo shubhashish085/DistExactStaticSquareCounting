@@ -328,8 +328,10 @@ public:
 
     void deleteAndClearForCutGraphForBipartite(){
 
+        delete[] degrees;
         delete[] offsets;
         delete[] neighbors;
+        delete[] ghost_degrees;
         delete[] ghost_offsets;
         delete[] ghost_neighbors;
         

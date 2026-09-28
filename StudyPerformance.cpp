@@ -307,27 +307,6 @@
 }*/
 
 //Sequential Direction Based Square Count With Cut Edges for Multiple Partitions
-/*int main(int argc, char** argv){
-
-    std::string input_data_graph_file = argv[1];
-    std::string vertex_partition_file = argv[2];
-    std::string partition_count = argv[3];
-
-    int partition_cnt = std::stoi(partition_count);
-
-    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
-    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
-    std::cout << "Partition Count : " << partition_count << std::endl;
-
-    //CountingAlgorithm::db_count_square_with_cut_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
-    CountingAlgorithm::db_count_square_with_cut_graph_parallel_optimized(input_data_graph_file, vertex_partition_file, partition_cnt);     
-    //CountingAlgorithm::print_db_count_square_with_cut_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);     
-
-    std::cout << "==================================================" << std::endl;
-
-}*/
-
-//Comparison of BFY counting
 int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
@@ -340,11 +319,33 @@ int main(int argc, char** argv){
     std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
     std::cout << "Partition Count : " << partition_count << std::endl;
 
-    Analysis::compare_bfy_cnt_in_multiple_partitions(input_data_graph_file, vertex_partition_file, partition_cnt);     
+    //CountingAlgorithm::db_count_square_with_cut_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);
+    CountingAlgorithm::db_count_square_with_cut_graph_parallel_opt_bp_graph(input_data_graph_file, vertex_partition_file, partition_cnt);     
+    //CountingAlgorithm::print_db_count_square_with_cut_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);     
 
     std::cout << "==================================================" << std::endl;
 
 }
+
+//Comparison of BFY counting
+/*int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "Comparison Butterfly Counting "<< std::endl;
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    Analysis::compare_bfy_cnt_in_multiple_partitions(input_data_graph_file, vertex_partition_file, partition_cnt);     
+
+    std::cout << "==================================================" << std::endl;
+
+}*/
 
 
 /*int main(int argc, char** argv){

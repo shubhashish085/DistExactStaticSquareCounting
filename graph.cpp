@@ -1665,6 +1665,7 @@ void Graph::loadPartitionedLocalGraphWithOnlyCutEdgesForBipartiteGraph(const std
 
     degrees = new ui[vertices_count];
     ghost_degrees = new ui[other_ptn_vertices_count];
+    local_partition = new NodeID[other_ptn_vertices_count];
     std::fill(degrees, degrees + vertices_count, 0);
     std::fill(ghost_degrees, ghost_degrees + other_ptn_vertices_count, 0);
 
@@ -1693,11 +1694,13 @@ void Graph::loadPartitionedLocalGraphWithOnlyCutEdgesForBipartiteGraph(const std
                 end_idx = other_ptn_vertex_idx_map[end];
                 degrees[begin_idx] += 1;
                 ghost_degrees[end_idx] += 1;
+                local_partition[end_idx] = partition[end];
             }else if ((partition[begin] != partition_no) && (partition[end] == partition_no)){
                 begin_idx = other_ptn_vertex_idx_map[begin];
                 end_idx = vertex_idx_map[end];
                 degrees[end_idx] += 1;
                 ghost_degrees[begin_idx] += 1;
+                local_partition[begin_idx] = partition[begin];
             }
         }
     }
