@@ -703,7 +703,7 @@
 }*/
 
 //Communication Analysis
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -726,7 +726,7 @@
     std::cout << "Total Communication Cost : " << communication_cost << std::endl;
     std::cout << "=============================================================" << std::endl;    
     
-}*/
+}
 
 // Replication Factor
 /*int main(int argc, char** argv){
@@ -946,7 +946,7 @@
 
 
 // Original Distributed Implementation
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -1012,4 +1012,4 @@ int main(int argc, char** argv){
     } 
    
     MPI_Finalize();
-}
+}*/
