@@ -307,7 +307,7 @@
 }*/
 
 //Sequential Direction Based Square Count With Cut Edges for Multiple Partitions
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -325,7 +325,7 @@ int main(int argc, char** argv){
 
     std::cout << "==================================================" << std::endl;
 
-}
+}*/
 
 //Comparison of BFY counting
 /*int main(int argc, char** argv){
@@ -945,7 +945,8 @@ int main(int argc, char** argv){
 }*/
 
 
-/*int main(int argc, char** argv){
+// Original Distributed Implementation
+int main(int argc, char** argv){
 
     MPI_Init(&argc, &argv);
 
@@ -1006,9 +1007,9 @@ int main(int argc, char** argv){
             std::cout << "Partition Count : " << partition_count << std::endl;
         }
         
-        DistributedCountingAlgorithm::db_count_square_with_cut_graph_parallel(input_data_graph_file, vertex_partition_file, partition_cnt);  
+        DistributedCountingAlgorithm::db_count_square_with_cut_graph_sqrd_opt(input_data_graph_file, vertex_partition_file, partition_cnt);  
 
     } 
    
     MPI_Finalize();
-}*/
+}
