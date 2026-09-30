@@ -703,7 +703,7 @@
 }*/
 
 //Communication Analysis
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
     std::string vertex_partition_file = argv[2];
@@ -726,7 +726,24 @@ int main(int argc, char** argv){
     std::cout << "Total Communication Cost : " << communication_cost << std::endl;
     std::cout << "=============================================================" << std::endl;    
     
+}*/
+
+
+//Print Graph Details
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    Graph* graph = new Graph();
+    graph->loadGraphFromFile(input_data_graph_file);
+    graph->print_graph_details();
+    std::cout << "=============================================================" << std::endl;    
+    
 }
+
+
 
 // Replication Factor
 /*int main(int argc, char** argv){

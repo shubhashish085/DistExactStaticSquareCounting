@@ -262,6 +262,29 @@ public:
         std::cout << "Ghost Vertices Count : " << ghost_vertices_count <<  "Cut Graph Edge Count : " << cut_edges_count << std::endl;
     }
 
+    void print_graph_details(){
+
+        double avg_degree, total_degree = 0;
+        long long wedge_count = 0;
+        ui max_degree = 0;
+
+        for(ui i = 0; i < vertices_count; i++){
+            wedge_count += (degrees[i] * (degrees[i] - 1))/ 2;
+            total_degree += degrees[i];
+            if(degrees[i] > max_degree){
+                max_degree = degrees[i];
+            }
+        }
+
+        avg_degree = (double) total_degree / vertices_count;
+
+        std::cout << "Vertices Count : " << vertices_count << std::endl;
+        std::cout << "Edges Count : " << edges_count << std::endl;
+        std::cout << "Max Degree : " << max_degree << std::endl;
+        std::cout << "Average Degree : " << avg_degree << std::endl;
+        std::cout << "Wedge Count : " << wedge_count << std::endl;
+    }
+
 
     void print_interface_graph_details(){
 
