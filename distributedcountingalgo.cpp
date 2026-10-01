@@ -2523,7 +2523,7 @@ void DistributedCountingAlgorithm::db_count_square_with_cut_graph_parallel_opt_b
     final_local_square_count += local_cut_graph_bfy_count;
     final_local_square_count += four_ptn_sq_count;
 
-    MPI_Reduce(&final_local_square_count, &global_square_count, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);    
+    //MPI_Reduce(&final_local_square_count, &global_square_count, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);    
 
     std::cout << "===================================================================================" << std::endl;
     std::cout << "Partition - " << ptn_idx << " : Local Square Count - " << local_square_count << std::endl;
@@ -2536,9 +2536,9 @@ void DistributedCountingAlgorithm::db_count_square_with_cut_graph_parallel_opt_b
     std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time - " << cut_graph_bfy_counting_time << std::endl;
     std::cout << "Partition - " << ptn_idx << " : Interface Graph Counting Time - " << ifc_graph_counting_time << std::endl;
     std::cout << "Partition - " << ptn_idx << " : Four Partition Square Counting Time - " << cut_graph_four_ptn_sq_counting_time << std::endl;
+    std::cout << "Partition - " << ptn_idx << " : Total Local Square Count : " << final_local_square_count << std::endl;
     std::cout << "Partition - " << ptn_idx << " : Counting Time - " << counting_time << std::endl;
     std::cout << "Partition - " << ptn_idx << " : Total Time - " << total_time << std::endl;
-    std::cout << "Partition - " << ptn_idx << " : Total Local Square Count : " << final_local_square_count << std::endl;
     std::cout << "===================================================================================" << std::endl;
 
     if(world_rank == 0){
