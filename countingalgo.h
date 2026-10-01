@@ -61,6 +61,8 @@ public:
     static long long count_interface_edge_square(Graph* graph);
     static long long count_interface_edge_square_optimized(Graph* graph);
     static long long count_interface_edge_square_latest(Graph* graph);
+
+    static void cut_graph_square_analysis(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 };
 
 

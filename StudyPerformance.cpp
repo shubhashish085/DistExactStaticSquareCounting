@@ -729,8 +729,8 @@
 }*/
 
 
-//Print Graph Details
-int main(int argc, char** argv){
+// Print Graph Details
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -741,6 +741,26 @@ int main(int argc, char** argv){
     graph->print_graph_details();
     std::cout << "=============================================================" << std::endl;    
     
+}*/
+
+// SQRD and SQRD Optimized Analysis - Cut Graph
+int main(int argc, char** argv){
+
+    std::string input_data_graph_file = argv[1];
+    std::string vertex_partition_file = argv[2];
+    std::string partition_count = argv[3];
+
+    int partition_cnt = std::stoi(partition_count);
+
+    std::cout << "=============================================================" << std::endl; 
+    std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
+    std::cout << "Vertex Partition File : " << vertex_partition_file << std::endl;
+    std::cout << "Partition Count : " << partition_count << std::endl;
+
+    CountingAlgorithm::cut_graph_square_analysis(input_data_graph_file, vertex_partition_file, partition_cnt);
+
+    std::cout << "=================================== End =========================================" << std::endl; 
+    std::cout << std::endl;
 }
 
 

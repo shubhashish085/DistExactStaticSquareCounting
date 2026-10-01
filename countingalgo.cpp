@@ -1976,6 +1976,77 @@ void CountingAlgorithm::db_count_square_with_cut_graph_parallel(const std::strin
 }
 
 
+void CountingAlgorithm::cut_graph_square_analysis(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
+
+    long long cut_graph_square_count = 0, four_ptn_sq_count = 0;
+    long long local_cut_graph_bfy_count = 0;
+    double cut_graph_four_ptn_sq_counting_time = 0.0, one_worker_cut_graph_time = 0.0, max_time_for_diff_ptns = 0.0;
+
+    Graph* cut_graph = new Graph();
+    cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
+
+    Graph* transformed_cut_graph = new Graph();
+    cut_graph->transformToAugmentedGraph(transformed_cut_graph);
+
+    clock_t counting_begin_clock = clock();
+    cut_graph_square_count = db_count_square_in_cut_graph(transformed_cut_graph);
+    one_worker_cut_graph_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+
+    cut_graph->deleteAndClearForCutGraph();
+
+    std::cout << "===================================================================================" << std::endl;    
+    std::cout << "Full Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    std::cout << "Full Cut Graph Counting Time : " << one_worker_cut_graph_time << std::endl;
+    std::cout << "===================================================================================" << std::endl;
+
+
+    for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
+
+        std::vector<std::pair<VertexID, VertexID>> local_cut_edge_list;
+
+        Graph* local_cut_graph = new Graph();
+        local_cut_graph->loadPartitionedLocalGraphWithOnlyCutEdgesForBipartiteGraph(file_path, vertex_partition_file_path, ptn_idx);
+
+        Graph* global_cut_graph = new Graph();
+        global_cut_graph->loadCutGraphWithLocalCutEdgesOptimized(file_path, vertex_partition_file_path, ptn_idx, local_cut_edge_list);        
+
+        clock_t counting_begin_clock = clock();
+        
+        clock_t local_cut_bfy_count_begin_clock = clock();
+        local_cut_graph_bfy_count = CountingAlgorithm::bfy_count_in_multi_ptns_from_bipartite_graph(local_cut_graph, ptn_idx); 
+        double cut_graph_bfy_counting_time = (double(clock() - local_cut_bfy_count_begin_clock)) / CLOCKS_PER_SEC;
+
+        if(partition_cnt >= 4) {
+            clock_t cut_graph_four_ptn_sq_cnt_begin_clock = clock();
+            four_ptn_sq_count = CountingAlgorithm::local_count_square_in_four_partitions_optimized(global_cut_graph, local_cut_edge_list); 
+            cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
+        }
+
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
+
+        max_time_for_diff_ptns = std::max(max_time_for_diff_ptns, counting_time);        
+
+        std::cout << "===================================================================================" << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Count - " << local_cut_graph_bfy_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Four Partition Square Count - " << four_ptn_sq_count << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time - " << cut_graph_bfy_counting_time << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Four Partition Square Counting Time - " << cut_graph_four_ptn_sq_counting_time << std::endl;
+        std::cout << "Partition - " << ptn_idx << " : Cut Graph Counting Time - " << counting_time << std::endl;
+        std::cout << "===================================================================================" << std::endl;
+
+        local_cut_graph->deleteAndClearForCutGraphForBipartite();
+        global_cut_graph->deleteAndClearForCutGraph();
+        local_cut_edge_list.clear();
+    }
+
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Maximum Time Parallel Cut Graph Computation : " << max_time_for_diff_ptns << std::endl;
+    std::cout << "==============================================" << std::endl;
+
+}
+
+
+
 
 void CountingAlgorithm::print_db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_cnt){
 
@@ -2028,11 +2099,7 @@ void CountingAlgorithm::print_db_count_square_with_cut_graph_parallel(const std:
             cut_graph_four_ptn_sq_counting_time = (double(clock() - cut_graph_four_ptn_sq_cnt_begin_clock)) / CLOCKS_PER_SEC;
         }
 
-        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
-        
-
-
-
+        double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC; 
 
         std::cout << "===================================================================================" << std::endl;
         std::cout << "Partition - " << ptn_idx << std::endl;
