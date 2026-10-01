@@ -1982,6 +1982,14 @@ void CountingAlgorithm::cut_graph_square_analysis(const std::string& file_path, 
     long long local_cut_graph_bfy_count = 0;
     double cut_graph_four_ptn_sq_counting_time = 0.0, one_worker_cut_graph_time = 0.0, max_time_for_diff_ptns = 0.0;
 
+    std::ofstream outputfile;
+    outputfile.open("sqrd_cut_analysis_opt_bpt.txt", std::ios::app);
+
+    outputfile << "=============================================================" << std::endl; 
+    outputfile << "Input Graph File : " << file_path << std::endl;
+    outputfile << "Vertex Partition File : " << vertex_partition_file_path << std::endl;
+    outputfile << "Partition Count : " << partition_cnt << std::endl;
+
     Graph* cut_graph = new Graph();
     cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
 
@@ -1994,10 +2002,10 @@ void CountingAlgorithm::cut_graph_square_analysis(const std::string& file_path, 
 
     cut_graph->deleteAndClearForCutGraph();
 
-    std::cout << "===================================================================================" << std::endl;    
-    std::cout << "Full Cut Graph Square Count : " << cut_graph_square_count << std::endl;
-    std::cout << "Full Cut Graph Counting Time : " << one_worker_cut_graph_time << std::endl;
-    std::cout << "===================================================================================" << std::endl;
+    outputfile << "===================================================================================" << std::endl;    
+    outputfile << "Full Cut Graph Square Count : " << cut_graph_square_count << std::endl;
+    outputfile << "Full Cut Graph Counting Time : " << one_worker_cut_graph_time << std::endl;
+    outputfile << "===================================================================================" << std::endl;
 
 
     for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){
@@ -2026,23 +2034,27 @@ void CountingAlgorithm::cut_graph_square_analysis(const std::string& file_path, 
 
         max_time_for_diff_ptns = std::max(max_time_for_diff_ptns, counting_time);        
 
-        std::cout << "===================================================================================" << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Count - " << local_cut_graph_bfy_count << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Four Partition Square Count - " << four_ptn_sq_count << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time - " << cut_graph_bfy_counting_time << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Four Partition Square Counting Time - " << cut_graph_four_ptn_sq_counting_time << std::endl;
-        std::cout << "Partition - " << ptn_idx << " : Cut Graph Counting Time - " << counting_time << std::endl;
-        std::cout << "===================================================================================" << std::endl;
+        outputfile << "===================================================================================" << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Count - " << local_cut_graph_bfy_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Four Partition Square Count - " << four_ptn_sq_count << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Local Cut Graph Bfy Counting Time - " << cut_graph_bfy_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Four Partition Square Counting Time - " << cut_graph_four_ptn_sq_counting_time << std::endl;
+        outputfile << "Partition - " << ptn_idx << " : Cut Graph Counting Time - " << counting_time << std::endl;
+        outputfile << "===================================================================================" << std::endl;
 
         local_cut_graph->deleteAndClearForCutGraphForBipartite();
         global_cut_graph->deleteAndClearForCutGraph();
         local_cut_edge_list.clear();
     }
 
-    std::cout << "==============================================" << std::endl;
-    std::cout << "Maximum Time Parallel Cut Graph Computation : " << max_time_for_diff_ptns << std::endl;
-    std::cout << "==============================================" << std::endl;
+    outputfile << "==============================================" << std::endl;
+    outputfile << "Maximum Time Parallel Cut Graph Computation : " << max_time_for_diff_ptns << std::endl;
+    outputfile << "==============================================" << std::endl;
 
+    outputfile << "=================================== End =========================================" << std::endl; 
+    outputfile << std::endl;
+
+    outputfile.close();
 }
 
 
