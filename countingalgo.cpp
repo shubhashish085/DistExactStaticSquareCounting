@@ -489,7 +489,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
         }
     }
 
-    //std::cout << "Count 1 : " << exact_count << std::endl;
+    std::cout << "Count 1 : " << exact_count << std::endl;
     // 1234 - Square
 
     long long count_2 = 0;
@@ -512,7 +512,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
         }
     }
 
-    //std::cout << "Count 2 : " << exact_count << std::endl;
+    std::cout << "Count 2 : " << exact_count << std::endl;
 
     // 1324 - Square
     long long count_3 = 0;
@@ -545,7 +545,7 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
         count_3 += (value * (value - 1)) / 2;
     }
 
-    //std::cout << "Count 3 : " << count_3 << std::endl;
+    std::cout << "Count 3 : " << count_3 << std::endl;
 
     exact_count += count_3;
 
@@ -1983,14 +1983,14 @@ void CountingAlgorithm::cut_graph_square_analysis(const std::string& file_path, 
     double cut_graph_four_ptn_sq_counting_time = 0.0, one_worker_cut_graph_time = 0.0, max_time_for_diff_ptns = 0.0;
 
     std::ofstream outputfile;
-    outputfile.open("sqrd_cut_analysis_opt_bpt.txt", std::ios::app);
+    outputfile.open("sqrd_cut_analysis_opt_bpt_ok.txt", std::ios::app);
 
     outputfile << "=============================================================" << std::endl; 
     outputfile << "Input Graph File : " << file_path << std::endl;
     outputfile << "Vertex Partition File : " << vertex_partition_file_path << std::endl;
     outputfile << "Partition Count : " << partition_cnt << std::endl;
 
-    Graph* cut_graph = new Graph();
+    /*Graph* cut_graph = new Graph();
     cut_graph->loadCutGraphFromFile(file_path, vertex_partition_file_path);
 
     Graph* transformed_cut_graph = new Graph();
@@ -2005,7 +2005,7 @@ void CountingAlgorithm::cut_graph_square_analysis(const std::string& file_path, 
     outputfile << "===================================================================================" << std::endl;    
     outputfile << "Full Cut Graph Square Count : " << cut_graph_square_count << std::endl;
     outputfile << "Full Cut Graph Counting Time : " << one_worker_cut_graph_time << std::endl;
-    outputfile << "===================================================================================" << std::endl;
+    outputfile << "===================================================================================" << std::endl;*/
 
 
     for (int ptn_idx = 0; ptn_idx < partition_cnt; ptn_idx++){

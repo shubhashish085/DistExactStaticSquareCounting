@@ -5214,6 +5214,68 @@ void Graph::transformToAugmentedGraphWithRandomOrdering(Graph* augmented_graph){
 }
 
 
+/*void Graph::transformToAugmentedGraphWithRandomReordering(Graph* augmented_graph){
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    augmented_graph->vertices_count = vertices_count;
+    augmented_graph->edges_count = edges_count;
+    augmented_graph->offsets = new ui[vertices_count + 1];
+    augmented_graph->neighbors = new VertexID[edges_count];
+    augmented_graph->partition = new NodeID[vertices_count];
+
+    augmented_graph->offsets[0] = 0;
+
+    for(VertexID i = 0; i < vertices_count; i++){
+        (augmented_graph->random_order).push_back(i);
+    }
+
+    std::shuffle(augmented_graph->random_order.begin(), augmented_graph->random_order.end(), gen);
+
+    augmented_graph->main_degrees = new ui[augmented_graph->vertices_count];
+    augmented_graph->degrees = new ui[augmented_graph->vertices_count];
+    std::fill(augmented_graph->degrees, augmented_graph->degrees + augmented_graph->vertices_count, 0);
+
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+            if ((augmented_graph->random_order[neighbors[j]] > augmented_graph->random_order[i]) || ((augmented_graph->random_order[neighbors[j]] == augmented_graph->random_order[i]) && neighbors[j] > i))
+            {
+                augmented_graph->degrees[i] += 1;
+            }
+            
+        }
+    }
+
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        augmented_graph->offsets[i + 1] = augmented_graph->offsets[i] + augmented_graph->degrees[i];
+        augmented_graph->main_degrees[i] = degrees[i];
+    }
+
+    std::vector<ui> neighbors_offset(vertices_count, 0);
+    ui offset;
+
+    for (ui i = 0; i < vertices_count; i++)
+    {
+        for (ui j = offsets[i]; j < offsets[i + 1]; j++)
+        {
+            if ((augmented_graph->random_order[neighbors[j]] > augmented_graph->random_order[i]) || ((augmented_graph->random_order[neighbors[j]] == augmented_graph->random_order[i]) && neighbors[j] > i))
+            {
+                offset = augmented_graph->offsets[i] + neighbors_offset[i];
+                augmented_graph->neighbors[offset] = neighbors[j];
+                neighbors_offset[i] += 1;
+            }
+            
+        }
+    }   
+}*/
+
+
 
 void Graph::transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph){
 

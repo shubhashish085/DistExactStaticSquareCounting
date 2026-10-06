@@ -151,6 +151,7 @@ public:
     
     void transformToAugmentedGraph(Graph* augmented_graph);
     void transformToAugmentedGraphWithRandomOrdering(Graph* augmented_graph);
+    //void transformToAugmentedGraphWithRandomReordering(Graph* augmented_graph);
     void transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWithCoreOrdering(Graph* augmented_graph);
     void transformToAugmentedGraphWithOnlyCoreOrdering(Graph* augmented_graph);
