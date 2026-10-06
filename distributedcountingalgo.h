@@ -25,6 +25,7 @@ public:
 
     static void db_count_square_with_cut_graph_parallel(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
     static void db_count_square_with_cut_graph_sqrd_opt(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
+    static void db_count_square_with_cut_graph_parallel_opt_bp_graph(const std::string& file_path, const std::string& vertex_partition_file_path, int partition_count);
 };
 
 
