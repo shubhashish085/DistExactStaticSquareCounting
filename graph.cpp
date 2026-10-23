@@ -5302,9 +5302,9 @@ void Graph::transformToAugmentedGraphWithVertexOrdering(Graph* augmented_graph){
         }
     }
 
-    for (ui i = 0; i < vertices_count; i++){
+    /*for (ui i = 0; i < vertices_count; i++){
         augmented_graph->partition[i] = partition[i];
-    }
+    }*/
 
     for (ui i = 0; i < vertices_count; i++)
     {

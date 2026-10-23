@@ -21,7 +21,7 @@
 #include "statistics.h"
 
 // Sequential Square Count - Degree Based ID
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 
     std::string input_data_graph_file = argv[1];
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv){
     std::cout << "Total Time : " <<  total_time <<  " seconds" << std::endl;
     std::cout << "==============================================" << std::endl;
 
-}
+}*/
 
 // Sequential Square Count - Random Ordering, K-coreness Ordering
 /*int main(int argc, char** argv){
@@ -63,8 +63,8 @@ int main(int argc, char** argv){
 
     clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
-    //graph->loadGraphFromFile(input_data_graph_file);
-    graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    graph->loadGraphFromFile(input_data_graph_file);
+    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
     double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
 
 
@@ -98,8 +98,8 @@ int main(int argc, char** argv){
 
     clock_t read_begin_clock = clock();
     Graph* graph = new Graph();
-    //graph->loadGraphFromFile(input_data_graph_file);
-    graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
+    graph->loadGraphFromFile(input_data_graph_file);
+    //graph->loadGraphFromFileForBothDirectionEdges(input_data_graph_file);
     double input_read_time = (double(clock() - read_begin_clock)) / CLOCKS_PER_SEC;    
 
 
@@ -107,7 +107,8 @@ int main(int argc, char** argv){
     graph->computeCoreForVertices();
     Graph* augmented_graph = new Graph();
     //graph->transformToAugmentedGraph(augmented_graph);
-    graph->transformToAugmentedGraphWithCoreOrdering(augmented_graph);
+    //graph->transformToAugmentedGraphWithCoreOrdering(augmented_graph);
+    graph->transformToAugmentedGraphWithVertexOrdering(augmented_graph);
     double transformation_time = (double(clock() - transformation_begin_clock)) / CLOCKS_PER_SEC;
 
     clock_t counting_begin_clock = clock();
@@ -117,7 +118,7 @@ int main(int argc, char** argv){
     double total_time = input_read_time + transformation_time + counting_time;    
 
     std::cout << "==============================================" << std::endl;
-    std::cout << "Node Ordering - K-Core Ordering " << std::endl;
+    std::cout << "Node Ordering - Vertex Ordering " << std::endl;
     std::cout << "Input Graph File : " << input_data_graph_file << std::endl;
     std::cout << "Exact Square Count : " << exact_count << std::endl;    
     std::cout << "Input File Reading Time : " << input_read_time << " seconds" << std::endl;
