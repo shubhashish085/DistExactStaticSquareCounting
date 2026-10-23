@@ -321,6 +321,29 @@ public:
         return false;
     }
 
+    bool checkDirectedEdgeExistence(VertexID u, VertexID v) const {
+        
+        ui count = 0;
+        const VertexID* neighbors =  getVertexNeighbors(u, count);
+
+        int begin = 0;
+        int end = count - 1;
+        while (begin <= end) {
+            int mid = begin + ((end - begin) >> 1);
+            if (neighbors[mid] == v) {
+                return true;
+            }
+            else if (neighbors[mid] > v){
+                end = mid - 1;
+            }
+            else{
+                begin = mid + 1;
+            }
+        }
+
+        return false;
+    }
+
 
     void deleteAndClear(){
 

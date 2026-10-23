@@ -453,6 +453,27 @@ long long CountingAlgorithm::local_count_square_in_four_partitions_optimized(Gra
 }
 
 
+long long CountingAlgorithm::sequential_db_count_triangle(Graph* graph){
+
+    long long exact_count = 0;
+    VertexID* v_nbrs, u, w;
+    ui v_nbr_cnt = 0, u_nbr_cnt = 0;
+
+    for(VertexID v = 0; v < graph->vertices_count; v++){
+        v_nbrs = graph->getVertexNeighbors(v, v_nbr_cnt);
+        for (ui i = 0; i < v_nbr_cnt; i++){
+            u = v_nbrs[i];
+            for(ui j = 0; j < v_nbr_cnt; j++){
+                w = v_nbrs[j];
+                if(graph->is_smaller(u, w) && graph->checkDirectedEdgeExistence(u, w)){
+                    exact_count++;
+                }
+            }
+        }        
+    }
+
+    return exact_count;
+}
 
 
 long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
