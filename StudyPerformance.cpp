@@ -78,6 +78,7 @@ int main(int argc, char** argv){
     double transformation_time = (double(clock() - transformation_begin_clock)) / CLOCKS_PER_SEC;    
 
     clock_t counting_begin_clock = clock();
+    //long long exact_count = CountingAlgorithm::sequential_db_count_square(augmented_graph);
     long long exact_count = CountingAlgorithm::sequential_db_count_square_for_wedges(graph, augmented_graph);
     double counting_time = (double(clock() - counting_begin_clock)) / CLOCKS_PER_SEC;
 
