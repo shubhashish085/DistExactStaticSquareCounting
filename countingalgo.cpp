@@ -554,6 +554,62 @@ long long CountingAlgorithm::sequential_db_count_square(Graph* graph){
 }
 
 
+long long CountingAlgorithm::sequential_db_count_square_for_wedges(Graph* graph, Graph* augmented_graph){
+
+    long long exact_count = 0;
+    VertexID *nbrs_1, *nbrs_2, *nbrs_3, *nbrs_4;
+    ui nbrs_1_cnt = 0, nbrs_2_cnt = 0, nbrs_3_cnt = 0, nbrs_4_cnt = 0;
+    VertexID v2, v3, v4;
+
+    long long count_3 = 0;
+    std::map<VertexID, ui> wedge_map;
+
+    for (VertexID v1 = 0; v1 < graph->vertices_count; v1++)
+    {
+        nbrs_1 = graph->getVertexNeighbors(v1, nbrs_1_cnt);
+
+        for(ui j = 0; j < nbrs_1_cnt; j++){
+
+            v2 = nbrs_1[j];
+            if(!(augmented_graph->is_smaller(v2, v1))) {
+                continue;
+            }
+
+            nbrs_2 = augmented_graph->getVertexNeighbors(v2, nbrs_2_cnt);
+            
+            for(ui k = 0; k < nbrs_2_cnt; k++){
+                
+                v3 = nbrs_2[k];
+
+                if(v1 < v3){
+
+                    auto search = wedge_map.find(v3);
+                    if (search == wedge_map.end()){
+                        wedge_map[v3] = 1;
+                    }
+                    else {
+                        wedge_map[v3] = wedge_map[v3] + 1;
+                    }
+                    
+                } 
+            }
+        }
+        
+        for (auto const &[key, value] : wedge_map){
+            count_3 += (value * (value - 1)) / 2;
+        }
+
+        wedge_map.clear();
+    }
+
+    exact_count += count_3;
+
+    return exact_count;
+
+}
+
+
+
 long long CountingAlgorithm::sequential_db_count_square_with_random_ordering(Graph* graph){
 
     long long exact_count = 0;
